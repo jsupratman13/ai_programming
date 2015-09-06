@@ -5,10 +5,17 @@ class List(object):
 		self.current_list = current_list
 
 	def PrintList(self):
-		pass
+		for status in self.current_list:
+			print status,
+		print ''
 
 	def UpdateList(self, action):
-		pass
+		for status in action.add_list:
+			if status not in self.current_list:
+				self.current_list.append(status)
+		for status in action.del_list:
+			if status in self.current_list:
+				self.current_list.remove(status)
 
 	def AchieveGoal(self, goal):
 		pass
@@ -34,8 +41,8 @@ class Action(object):
 			print add,
 			print ""
 		print 'del_list'
-		for del in self.del_list:
-			print del,
+		for remove in self.del_list:
+			print remove,
 			print""
 
 class BehaviorGenerator(object):
