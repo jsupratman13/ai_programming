@@ -18,10 +18,16 @@ class List(object):
 				self.current_list.remove(status)
 
 	def AchieveGoal(self, goal):
-		pass
+		for fact in goal:
+			if fact not in self.facts:
+				return False
+		return True
 
 	def IsExecutable(self, action_list):
-		pass
+		for fact in action.precondition:
+			if fact not in self.facts:
+				return False
+		return True
 
 class Action(object):
 	def __init__(self, name, precondition, add_list, del_list):
@@ -46,4 +52,17 @@ class Action(object):
 			print""
 
 class BehaviorGenerator(object):
-	pass
+	def __init__(self, initial_model, available_actions, goal):
+		self.initial_model = initial_model
+		self. available_actions = available_actions,
+		self.goal = goal
+	
+	def planning(self, action_list, goal_list):
+		plan_list = []
+
+	def process(self):
+		plan = self.planning(available_actions, goal)
+		if plan is None:
+			assert False, 'plan does not exist'
+		pass
+		
