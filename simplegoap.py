@@ -18,16 +18,21 @@ class List(object):
 				self.current_list.remove(status)
 
 	def AchieveGoal(self, goal):
-		for fact in goal:
-			if fact not in self.facts:
+		for status in goal:
+			if status not in self.current_list:
 				return False
 		return True
 
 	def IsExecutable(self, action_list):
-		for fact in action.precondition:
-			if fact not in self.facts:
+		for status in action_list.precondition:
+			if status not in self.current_list:
 				return False
 		return True
+	
+	def create_successor(self, action):
+		successor_model = List(list(self.current_list))
+		successor_model.UpdateList(action)
+		return successor_model
 
 class Action(object):
 	def __init__(self, name, precondition, add_list, del_list):
@@ -51,18 +56,54 @@ class Action(object):
 			print remove,
 			print""
 
+class PartialPlan:
+	def __init__(self, actions, model):
+		self.actions = actions
+		self.model = model
+	
+	def nice_print(self):
+		print 'Partial actions: ',
+		print self.actions
+		print 'Partial world model: ',
+		self.model.nice_print()
+
+class PlanningTask:
+	def __init__(self, initial_model, available_actions, goal):
+		self.initial_model = initial_model
+		self.available_actions = available_actions
+		self.goal = goal
+
+	def depth_first_search(self, bound):
+		node = PartialPlan([], self.initial_model)
+		open_nodes = [node]
+
+		while open_nodes:
+			node = open_nodes.pop()
+			if node.model.AchieveGoal(self.goal):
+				return node.actions
+			if len(node.actions) == bound:
+				continue
+			for action in self.available_actions:
+				if node.model.IsExecutable(action):
+					successor = node.model.create_successor(action)
+					actions = list(node.actions)
+					actions.append(action.name)
+					open_nodes.append(PartialPlan(actions, successor))
+		return False
+
 class BehaviorGenerator(object):
 	def __init__(self, initial_model, available_actions, goal):
 		self.initial_model = initial_model
-		self. available_actions = available_actions,
+		self. available_actions = available_actions
 		self.goal = goal
 	
 	def planning(self, action_list, goal_list):
 		plan_list = []
+		pass
 
 	def process(self):
 		plan = self.planning(available_actions, goal)
 		if plan is None:
 			assert False, 'plan does not exist'
 		pass
-		
+	
