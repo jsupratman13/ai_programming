@@ -94,7 +94,7 @@ class PlanningTask:
 class BehaviorGenerator(object):
 	def __init__(self, initial_model, available_actions, goal):
 		self.initial_model = initial_model
-		self. available_actions = available_actions
+		self.available_actions = available_actions
 		self.goal = goal
 	
 	def planning(self, action_list, goal_list):
