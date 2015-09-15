@@ -43,19 +43,20 @@ class Action_List(object):
 		self.get_cost = get_cost
 
 	def PrintList(self):
-		print 'action' + name
-		print 'precondition'
+		print 'action: ' + self.name
+		print 'precondition: ',
 		for precon in self.precondition:
 			print precon,
-			print ""
-		print 'add list'
+		print ""
+		print 'add list: ',
 		for add in self.add_list:
 			print add,
-			print ""
-		print 'del_list'
+		print ""
+		print 'del_list: ',
 		for remove in self.del_list:
 			print remove,
-			print""
+		print""
+		print 'cost: '+ str(self.get_cost)
 
 class PartialPlan:
 	def __init__(self, actions, model):
