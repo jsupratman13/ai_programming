@@ -1,6 +1,6 @@
 ###goap for example
 
-class List(object):
+class World(object):
 	def __init__(self, current_list):
 		self.current_list = current_list
 
@@ -34,12 +34,13 @@ class List(object):
 		successor_model.UpdateList(action)
 		return successor_model
 
-class Action(object):
-	def __init__(self, name, precondition, add_list, del_list):
+class Action_List(object):
+	def __init__(self, name, precondition, add_list, del_list, get_cost):
 		self.name = name
 		self.precondition = precondition
 		self.add_list = add_list
 		self.del_list = del_list
+		self.get_cost = get_cost
 
 	def PrintList(self):
 		print 'action' + name

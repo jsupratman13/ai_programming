@@ -1,76 +1,76 @@
 import sys, time, math
-from simplegoap import List, Action, BehaviorGenerator, PlanningTask
+from simplegoap import World, Action_List, BehaviorGenerator, PlanningTask
 
-def action_list():
+def hunting_motion_ex():
 	actions = []
 	
 	#Action: Pickup Spear
-	actions.append(Action('pickup_spear',
+	actions.append(Action_List('pickup_spear',
 				['at_armory', 'empty_hands'], 
 				['hold_spear'], 
-				['empty_hands']))
+				['empty_hands'],1))
 
 	#Action: Store Spear
-	actions.append(Action('store_spear',
+	actions.append(Action_List('store_spear',
 				['at_armory','hold_spear'],
 				['empty_hands'],
-				['hold_spear']))
+				['hold_spear'],1))
 
 	#Action: Hunt Deer
-	actions.append(Action('hunt_deer',
+	actions.append(Action_List('hunt_deer',
 				['at_forest', 'hold_spear','empty_backpack'],
 				['carry_rawmeat'],
-				['empty_backpack']))
+				['empty_backpack'],1))
 
 	#Action: Cook Food REEDIT
-	actions.append(Action('cook_food',
+	actions.append(Action_List('cook_food',
 				['at_kitchen','carry_rawmeat'],
 				['carry_food'],
-				['carry_rawmeat']))
+				['carry_rawmeat'],1))
 
 	#Action: Eat Dinner
-	actions.append(Action('eat_dinner',
+	actions.append(Action_List('eat_dinner',
 				['at_dinning_room', 'empty_hands', 'carry_food'],
 				['have_dinner'],
-				['carry_food']))
+				['carry_food'],1))
 
 	#Action: Move to Armory REEDIT
-	actions.append(Action('moveto_armory',
+	actions.append(Action_List('moveto_armory',
 				['ready_to_move'],
 				['at_armory'],
-				['ready_to_move']))
+				['ready_to_move'],1))
 	
 	#Action: Move to Kitchen REEDIT
-	actions.append(Action('moveto_kitchen',
+	actions.append(Action_List('moveto_kitchen',
 				['ready_to_move'],
 				['at_kitchen'],
-				['ready_to_move']))
+				['ready_to_move'],1))
 
 	#Action: Move to Forest REEDIT
-	actions.append(Action('moveto_forest',
+	actions.append(Action_List('moveto_forest',
 				['ready_to_move'],
 				['at_forest'],
-				['ready_to_move']))
+				['ready_to_move'],1))
 
 	#Action: Move to Dinning room
-	actions.append(Action('moveto_dinning_room',
+	actions.append(Action_List('moveto_dinning_room',
 				['empty_hands', 'carry_food'],
 				['at_dinning_room'],
-				[]))
+				[],1))
 
 	#Action: Ready to Move
-	actions.append(Action('new_destination',
+	actions.append(Action_List('new_destination',
 				[],
 				['ready_to_move'],
 				['at_forest', 'at_gates', 'at_armory',
-				'at_kitchen','at_farmhouse']))
+				'at_kitchen','at_farmhouse'],1))
 
 	return actions
 
 def main():
 	initial_model = List(['at_armory', 'empty_backpack', 'empty_hands'])
 	goal = [] #carry_food
-	actions = action_list()
+	actions = hunting_motion_ex()
 	
 #	print 'initial model: ' + str(initial_model)
 #	print 'action list: ' + str(actions)
@@ -89,7 +89,7 @@ def main():
 def main2():
 	initial_model = List(['ready_to_move', 'empty_backpack','empty_hands'])
 	goal = ['carry_food']
-	actions = action_list()
+	actions = hunting_motion_ex()
 	task = PlanningTask(initial_model, actions, goal)
 	print 'Solving the present planning problem'
 	plan = task.depth_first_search(8)
