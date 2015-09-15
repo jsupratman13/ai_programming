@@ -39,11 +39,12 @@ class World(object):
 		return successor_model
 
 class Action_List(object):
-	def __init__(self, name, precondition, add_list, del_list):
+	def __init__(self, name, precondition, add_list, del_list, get_cost):
 		self.name = name
 		self.precondition = precondition
 		self.add_list = add_list
 		self.del_list = del_list
+		self.get_cost = get_cost
 
 	def PrintList(self):
 		print 'action: ' + self.name
@@ -59,40 +60,48 @@ class Action_List(object):
 		for remove in self.del_list:
 			print remove,
 		print""
+		print 'cost: '+ str(self.get_cost)
 
-class PartialPlan:
-	def __init__(self, actions, model):
-		self.actions = actions
-		self.model = model
-	
-	def nice_print(self):
-		print 'Partial actions: ',
-		print self.actions
-		print 'Partial world model: ',
-		self.model.nice_print()
-
-class PlanningTask:
+class Planner(object):
 	def __init__(self, initial_model, available_actions, goal):
 		self.initial_model = initial_model
 		self.available_actions = available_actions
 		self.goal = goal
+	
+	def planning(self, action_list, goal_list):
+		plan_list = []
+		pass
 
-	def depth_first_search(self, bound):
-		node = PartialPlan([], self.initial_model)
-		open_nodes = [node]
-
-		while open_nodes:
-			node = open_nodes.pop()
-			if node.model.AchieveGoal(self.goal):
-				return node.actions
-			if len(node.actions) == bound:
-				continue
-			for action in self.available_actions:
-				if node.model.IsExecutable(action):
-					successor = node.model.create_successor(action)
-					actions = list(node.actions)
-					actions.append(action.name)
-					open_nodes.append(PartialPlan(actions, successor))
-		return False
+	def process(self):
+		plan = self.planning(available_actions, goal)
+		if plan is None:
+			assert False, 'plan does not exist'
+		pass
 
 
+def distance_to_state(state1, state2):
+	score = 0
+	
+	for state in state2:
+		if state not in state1:
+			score += 1
+
+	for state in state1:
+		if state not in state2:
+			score += 1
+	
+	return score
+
+def condition_met(state1, state2):
+	for state in state2:
+		if state in state1:
+			return True
+	return False
+
+if __name__ == '__main__':
+	state1 = ['yuck', 'wonder', 'weird']
+	state2 = ['wonder']
+
+	score = distance_to_state(state1, state2)
+	print score
+	

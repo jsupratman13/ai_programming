@@ -1,26 +1,27 @@
 import sys
-from simplegoap import List, Action
+from simplegoap import World, Action_List
 
 def example():
-	model = List(['at_armory', 'empty_backpack', 'empty_hands'])
+	model = World(['at_armory', 'empty_backpack', 'empty_hands'])
 	print 'Initial Model: ',
 	model.PrintList()
 	
-	action = Action('pickup_spear', 
+	action = Action_List('pickup_spear', 
 			['at_armory','empty_hands'], 
 			['hold_spear'],
-			['empty_hands'])
+			['empty_hands'], 5)
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()
 
-	action = Action('dropoff_spear', 
+	action = Action_List('dropoff_spear', 
 			['at_armory', 'hold_spear'], 
 			['empty_hands'], 
-			['hold_spear'])
+			['hold_spear'], 5)
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()
+	action.PrintList()
 
 
 if __name__ == '__main__':

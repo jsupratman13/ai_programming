@@ -68,8 +68,8 @@ def hunting_motion_ex():
 	return actions
 
 def main():
-	initial_model = List(['at_armory', 'empty_backpack', 'empty_hands'])
-	goal = [] #carry_food
+	model = List(['at_armory', 'empty_backpack', 'empty_hands'])
+	model.GoalList(['carry_food'])
 	actions = hunting_motion_ex()
 	
 #	print 'initial model: ' + str(initial_model)
@@ -86,7 +86,7 @@ def main():
 #	print 'updated model',
 #	initial_model.PrintList()
 
-def main2():
+def ex_simple():
 	initial_model = List(['ready_to_move', 'empty_backpack','empty_hands'])
 	goal = ['carry_food']
 	actions = hunting_motion_ex()
@@ -99,7 +99,7 @@ def main2():
 
 if __name__ == '__main__':
 	try:
-		main2()
+		ex_simple()
 	
 	except (KeyboardInterrupt,SystemExit):
 		sys.exit()
