@@ -12,7 +12,7 @@ STATE_CHANGE_TIME = 0.5
 
 def in_kickareaX(self, ballpos):
     bx, by, bth = ballpos
-    return 0 < bx < self.conf_kick_forward
+    return 0 < bx < (self.conf_kick_forward+30)
 def in_kickareaY(self, ballpos):
     bx, by, bth = ballpos
     right_far   = self.conf_kick_right_far - 30
@@ -78,7 +78,7 @@ def plan_path_with_obstacle_avoidanceLC(robot, destlc):
     return path
 
 def FwTrackingBall(robot):
-    ball_lc = robot.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
+    ball_lc = robot.GetEstimatedLocalPos(robot.HLOBJECT_BALL, robot.HLCOLOR_BALL)
     if( len(ball_lc) <= 0):
         robot.status = 'SEARCH_BALL'
         robot.Cancel()
@@ -155,31 +155,31 @@ class FW(pyenv.Robot):
         }
 
         # read shoot area
-        conf_file = "fw-move.cnf"                                                   # conf_file : "fw-move.cnf"
+        conf_file = "kid/actionconf/kid-strategy.cnf"                                                   # conf_file : "fw-move.cnf"
         self.DebugLogln("")
         self.SetParaFile(conf_file)
-        value = self.ReadPara("kick_front", "200,350", conf_file)
+        value = self.ReadPara("kick_front", "120,2200", conf_file)
         rect = value.split(",")
         self.conf_kick_near    = int(rect[0])
         self.conf_kick_forward = int(rect[1])
 
-        value = self.ReadPara("kick_left", "60,170", conf_file)
+        value = self.ReadPara("kick_left", "30,100", conf_file)
         params = value.split(",")
         self.conf_kick_left_close = int(params[0])
         self.conf_kick_left_far = int(params[1])
 
-        value = self.ReadPara("kick_right", "-60,-170", conf_file)
+        value = self.ReadPara("kick_right", "-30,-100", conf_file)
         params = value.split(",")
         self.conf_kick_right_close = int(params[0])
         self.conf_kick_right_far = int(params[1])
 
         self.kick_conf = self.conf_kick_near, self.conf_kick_forward, self.conf_kick_left_close, self.conf_kick_left_far, self.conf_kick_right_close, self.conf_kick_right_far
-        self.kick_wait = float(self.ReadPara("kick_wait", "1.5", conf_file))
+        self.kick_wait = float(self.ReadPara("kick_wait", "0.5", conf_file))
 
-        self.max_stride_x = int(self.ReadPara("max_stride_x", "8", conf_file))
-        self.max_stride_y = int(self.ReadPara("max_stride_y", "10", conf_file))
-        self.mid_stride_x = int(self.ReadPara("mid_stride_x", "6", conf_file))
-        self.mid_stride_y = int(self.ReadPara("mid_stride_y", "8", conf_file))
+        self.max_stride_x = int(self.ReadPara("max_stride_x", "20", conf_file))
+        self.max_stride_y = int(self.ReadPara("max_stride_y", "26", conf_file))
+        self.mid_stride_x = int(self.ReadPara("mid_stride_x", "18", conf_file))
+        self.mid_stride_y = int(self.ReadPara("mid_stride_y", "20", conf_file))
         self.max_walk_angle = int(self.ReadPara("max_walk_angle", "8", conf_file))
         self.mid_walk_angle = int(self.ReadPara("mid_walk_angle", "6", conf_file))
 
@@ -191,8 +191,9 @@ class FW(pyenv.Robot):
 #        self.role_switch_time = self.time()
     
     def FwSearchBall(self):
+        self.DebugLogln("Search Ball")
         self.WaitUntilStatusUpdated()
-        for num in [PAN_DEG_MAX, 45, -45 , -PAN_DEG_MAX]:
+        for num in [0,PAN_DEG_MAX, 45, -45 , -PAN_DEG_MAX]:
             self.WaitUntilStatusUpdated()
             self.PanDeg(num)
             self.sleep(1.0)
@@ -205,6 +206,7 @@ class FW(pyenv.Robot):
                 break
 
     def FwApproachBall(self):
+        self.DebugLogln("Approach ball: start")
         while(True):
             self.WaitUntilStatusUpdated()
             ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
@@ -219,8 +221,8 @@ class FW(pyenv.Robot):
             ball_x_gl, ball_y_gl, ball_th_gl = ball_gl
             target_dist_lc = tactics.geometry.Distance(ball_lc[0]) #=(ball_x_lc^2+ball_y_lc^2)^1/2
             target_direction_deg = tactics.geometry.DirectionDeg(ball_lc[0])#=atan2(ball_y_lc/ball_x_lc)
-
-            if target_dist_lc >= 700:
+            self.DebugLogln(str(target_dist_lc))
+            if target_dist_lc >= 500:
                 plan_lc =  plan_path_with_obstacle_avoidanceLC(self, ball_lc[0])
                 follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
             else:
@@ -232,6 +234,7 @@ class FW(pyenv.Robot):
                     walk_y = (walk_y / math.fabs(walk_y)) * max(math.fabs(walk_y), 4)
                     self.Walk(0, 0, 0, 12, walk_y)
                 else:
+                    self.DebugLogln("Approach ball: done")
                     self.Cancel()
                     self.status = 'TURN_AROUND_BALL'
                     self.sleep(STATE_CHANGE_TIME)
@@ -247,20 +250,20 @@ class FW(pyenv.Robot):
         ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
 #        target_pos = FwCheckBallposGL(self, ball_lc)
         target_pos = ((5000,0,0))
-        self.Walk(2,0,0,12,0)
+#        self.Walk(2,0,0,12,0)
         while True:
-            ball_lc = self.self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
+            ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             robot_x_gl,robot_y_gl,robot_th_gl = self.GetSelfPos()
             if(len(ball_lc) > 0 or FwTrackingBall(self) == 'E_SUCCESS'):
                 ball_gl = tactics.geometry.CoordTransLocalToGlobal(self.GetSelfPos(), ball_lc[0])
                 shootpos = FwCalcArrivePos(self, ball_gl, target_pos, self.turn_dist)
                 dx, dy, dt = shootpos
                 ball_lc_x, ball_lc_y, ball_lc_t = ball_lc[0]
-                if( tactics.geometry.Distance(ball_lc[0]) > TURN_DIST_THRE or math.fabs(tactics.geometry.DirectionDeg(ball_lc[0])) > 30):
-                    self.DebugLogln("FwTurnAroundBall:false")
-                    self.status = 'APPROACH_BALL'
-                    self.Cancel()
-                    break
+#                if( tactics.geometry.Distance(ball_lc[0]) > TURN_DIST_THRE or math.fabs(tactics.geometry.DirectionDeg(ball_lc[0])) > 30):
+#                    self.DebugLogln("FwTurnAroundBall:false")
+#                    self.status = 'APPROACH_BALL'
+#                    self.Cancel()
+#                    break
             else:
                 self.DebugLogln("turn_around_ball_to_goal: ball not found")
                 self.status = 'SEARCH_BALL'
@@ -296,7 +299,8 @@ class FW(pyenv.Robot):
                 break
 
     def FwAdjustToKick(self):
-        self.Walk(2,0,0,12,0)
+        self.DebugLogln("Adjust To Kick")
+#        self.Walk(2,0,0,12,0)
         self.sleep(0.2)
 
         ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
@@ -309,10 +313,10 @@ class FW(pyenv.Robot):
                 self.Cancel()
                 self.sleep(0.5)
                 break
-            ball_gl = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
-            if ball_gl:
+            ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
+            if ball_lc:
                 self_pos = self.GetSelfPos()
-                ballx_lc, bally_lc, ballth_lc = tactics.geometry.CoordTransGlobalToLocal(self_pos, ball_gl[0])
+                ballx_lc, bally_lc, ballth_lc = ball_lc[0]#tactics.geometry.CoordTransGlobalToLocal(self_pos, ball_gl[0])
                 targetx = ballx_lc - (self.conf_kick_forward + self.conf_kick_near) / 2.0
 
                 if bally_lc > self.conf_kick_left_far:
@@ -330,7 +334,8 @@ class FW(pyenv.Robot):
                 target_gl = [(5000, 0, 0)]
                 targetdeg = 0
                 if target_gl:
-                    approachpos_gl = FwCalcArrivePos(self, ball_gl[0], target_gl[0], 300)
+                    ball_gl = tactics.geometry.CoordTransGlobalToLocal(self_pos, ball_lc[0])
+                    approachpos_gl = FwCalcArrivePos(self, ball_gl, target_gl[0], 300)
                     approachpos_lc = tactics.geometry.CoordTransGlobalToLocal(self_pos, approachpos_gl)
                     targetth = approachpos_lc[2]
                     targetdeg = Limit(math.degrees(targetth), 5, -5)
@@ -382,7 +387,8 @@ class FW(pyenv.Robot):
             striker_pos = self.GetCommonGlobalPos(striker_id, self.HLOBJECT_ROBOT, self.GetOurColor())
             if len(striker_pos)>0:
                 selfpos = self.GetSelfPos()
-                target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos[0])
+                striker_pos = [(striker_pos[0][0], striker_pos[0][1], striker_pos[0][2])]
+                target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos)
                 x, y, th = target_lc[0]
                 target_lc = ((x,y+500+th))
                 if tactics.geometry.Distance(target_lc) > 800:
@@ -409,11 +415,12 @@ class FW(pyenv.Robot):
             arg = 'SEARCH_BALL'                                              # Set Common Info
        
         self.SetSendCommonInfo(True)
-        self.SetCommonString("Striker")                                                  # Set Common String
+        self.SetCommonString("Supporter")                                                  # Set Common String
 #        self.SetCommonString("Supporter")
         self.start_time = time.time()                                               # Set Start Time
         self.should_relocalize = True
         self.status = arg                                                           # status <- arg (KICK_OFF, RESTART, KICK_DEFENCE, ...)
+        self.SetSelfPos((0,0,0))
         while True:
             try:                                                                    # for catching fall error
                 self.role = self.RoleCheck()
