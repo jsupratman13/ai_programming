@@ -49,19 +49,18 @@ def normal_walk_to_destLC(robot, destlc, step_width, use_theta = False):
         if math.fabs(dir_deg) > 45:
             x = 0
             y = 0
-            th = int(sign_dir * 15)
+            th = int(min(math.fabs(dir_deg/2),20) * sign_dir)
         else:
             x = int(min(dx, onestep_dist * stride_ratio))
             y = 0
-            th = int(min(math.fabs(dir_deg / 2), 15) * sign_dir)
-
-    wx = int(Limit(x / 5, robot.max_stride_x, -robot.max_stride_x))
-    wy = int(Limit(y / 4, robot.max_stride_y, -robot.max_stride_y))
-    wt = int(Limit(th, robot.max_walk_angle, -robot.max_walk_angle))
-#    wt = int(Limit(th / 5, robot.max_walk_angle, -robot.max_walk_angle))
+            th = int(min(math.fabs(dir_deg / 2), 6) * sign_dir)
+    
+    wx = int(x/5)
+    wy = int(y/4)
+    wt = wth
 
     robot.DebugLogln("Walk: 0, " + str(wt) + ", " + str(wx) + ", 0, " + str(wy))
-    robot.Walk(0, wt, wx, 0, wy)
+    robot.Walk(0, wt, wx, 12, wy)
 
 def follow_path_normal_walk(robot, path, step_width):
     if len(path) >= 2: normal_walk_to_destLC(robot, path[0], step_width, False)
@@ -79,7 +78,7 @@ def plan_path_with_obstacle_avoidanceLC(robot, destlc):
     return path
 
 def FwTrackingBall(robot):
-    ball_lc = robot.GetAveragedBallPos(3)
+    ball_lc = robot.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
     if( len(ball_lc) <= 0):
         robot.status = 'SEARCH_BALL'
         robot.Cancel()
@@ -156,7 +155,7 @@ class FW(pyenv.Robot):
         }
 
         # read shoot area
-        conf_file = "AdultSize-fw-move.cnf"                                                   # conf_file : "fw-move.cnf"
+        conf_file = "fw-move.cnf"                                                   # conf_file : "fw-move.cnf"
         self.DebugLogln("")
         self.SetParaFile(conf_file)
         value = self.ReadPara("kick_front", "200,350", conf_file)
@@ -208,7 +207,7 @@ class FW(pyenv.Robot):
     def FwApproachBall(self):
         while(True):
             self.WaitUntilStatusUpdated()
-            ball_lc = self.GetAveragedBallPos(3)
+            ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             if(len(ball_lc) < 0 or FwTrackingBall(self) == 'E_FAILURE'):
                 self.status = 'SEARCH_BALL'
                 self.Cancel()
@@ -221,19 +220,17 @@ class FW(pyenv.Robot):
             target_dist_lc = tactics.geometry.Distance(ball_lc[0]) #=(ball_x_lc^2+ball_y_lc^2)^1/2
             target_direction_deg = tactics.geometry.DirectionDeg(ball_lc[0])#=atan2(ball_y_lc/ball_x_lc)
 
-            if target_dist_lc >= TURN_DIST_THRE:
-#                plan_lc =  tactics.approach.plan_path_with_obstacle_avoidanceLC(self, ball_lc[0])
-#                tactics.approach.follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
+            if target_dist_lc >= 700:
                 plan_lc =  plan_path_with_obstacle_avoidanceLC(self, ball_lc[0])
                 follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
             else:
-                if( not(-DEG_MARGEN < target_direction_deg < DEG_MARGEN) ):
-                    walk_th = Limit(target_direction_deg, self.max_walk_angle, -self.max_walk_angle)
-                    self.Walk(0, walk_th, 0, 0, 0)
-                elif( not(-100 < ball_y_lc < 100) ):
+                if math.fabs(target_direction_deg) > 30:
+                    walk_th = Limit(target_direction_deg, 10, -10)
+                    self.Walk(0,walk_th,0,12,0)
+                elif math.fabs(ball_y_lc) > 50:
                     walk_y = Limit(ball_y_lc*0.1, self.max_stride_y, -self.max_stride_y)
                     walk_y = (walk_y / math.fabs(walk_y)) * max(math.fabs(walk_y), 4)
-                    self.Walk(0, 0, 0, 0, walk_y)
+                    self.Walk(0, 0, 0, 12, walk_y)
                 else:
                     self.Cancel()
                     self.status = 'TURN_AROUND_BALL'
@@ -247,12 +244,12 @@ class FW(pyenv.Robot):
         prev_dist = -10
         ka = 0.02
         kb = 0.05
-        ball_lc = self.GetAveragedBallPos(3)
-        target_pos = FwCheckBallposGL(self, ball_lc)
-        self.DebugLogln("targetpos:"+str(target_pos))
+        ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
+#        target_pos = FwCheckBallposGL(self, ball_lc)
+        target_pos = ((5000,0,0))
+        self.Walk(2,0,0,12,0)
         while True:
-            self.WaitUntilStatusUpdated()
-            ball_lc = self.GetAveragedBallPos(3)
+            ball_lc = self.self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             robot_x_gl,robot_y_gl,robot_th_gl = self.GetSelfPos()
             if(len(ball_lc) > 0 or FwTrackingBall(self) == 'E_SUCCESS'):
                 ball_gl = tactics.geometry.CoordTransLocalToGlobal(self.GetSelfPos(), ball_lc[0])
@@ -284,8 +281,8 @@ class FW(pyenv.Robot):
             if ang_comp > 0: stridey_abs = self.max_stride_y - ang_comp
             else: stridey_abs = self.max_stride_y + ang_comp
 
-            if ccw: self.Walk(0, base_ang + int(ang_comp), 0, 0, -stridey_abs)
-            else: self.Walk(0, -(base_ang + int(ang_comp)), 0, 0, stridey_abs)
+            if ccw: self.Walk(0, base_ang + int(ang_comp), 0, 12, -stridey_abs)
+            else: self.Walk(0, -(base_ang + int(ang_comp)), 0, 12, stridey_abs)
 
             shootpos_lc = tactics.geometry.CoordTransGlobalToLocal(self.GetSelfPos(), shootpos)
             shootpos_x, shootpos_y, shootpos_th = shootpos_lc
@@ -299,10 +296,10 @@ class FW(pyenv.Robot):
                 break
 
     def FwAdjustToKick(self):
-        self.Walk(2,0,0,0,0)
+        self.Walk(2,0,0,12,0)
         self.sleep(0.2)
 
-        ball_lc = self.GetAveragedBallPos(3)
+        ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
         should_kick_left = ball_lc[0][1] > (self.conf_kick_left_close + self.conf_kick_right_close)/2
 
         while True:
@@ -312,7 +309,7 @@ class FW(pyenv.Robot):
                 self.Cancel()
                 self.sleep(0.5)
                 break
-            ball_gl = self.GetAveragedBallGlobalPos(3)
+            ball_gl = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             if ball_gl:
                 self_pos = self.GetSelfPos()
                 ballx_lc, bally_lc, ballth_lc = tactics.geometry.CoordTransGlobalToLocal(self_pos, ball_gl[0])
@@ -343,10 +340,10 @@ class FW(pyenv.Robot):
 
                     if math.fabs(targety) > 100: targetdeg = 0
                     
-                    tactics.move.Move(self, targetx, targety, 0, 7, 15,16)
-                    #self.AccurateWalk(0, targetx, targety, targetdeg)
+                    #tactics.move.Move(self, targetx, targety, 0, 7, 15,16)
+                    self.AccurateWalk(0, targetx, targety, targetdeg)
                     self.sleep(0.3)
-            ball_lc = self.GetAveragedBallPos(3)
+            ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             if in_kickarea(self, ball_lc[0]):
                 self.DebugLogln("adjust_to_kick : done")
                 self.Cancel()
@@ -356,11 +353,11 @@ class FW(pyenv.Robot):
 
 
     def FwShoot(self):
-        ball_lc = self.GetAveragedBallPos(3)
+        ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
         self.DebugLogln("shoot")
         while(True):
             self.WaitUntilStatusUpdated()
-            ball_lc = self.GetAveragedBallPos(3)
+            ball_lc = self.GetEstimatedLocalPos(self.HLOBJECT_BALL, self.HLCOLOR_BALL)
             if(len(ball_lc) < 0 or FwTrackingBall(self) == 'E_FAILURE'):
                 self.status = 'SEARCH_BALL'
                 break
@@ -382,7 +379,7 @@ class FW(pyenv.Robot):
                 striker_id = id
                 break
         while self.GetCommonString(striker_id) == 'Striker':
-            striker_pos = self.GetCommonGlobalPos(striker_id, self.HLBOJECT_ROBOT, self.GetOurColor())
+            striker_pos = self.GetCommonGlobalPos(striker_id, self.HLOBJECT_ROBOT, self.GetOurColor())
             if len(striker_pos)>0:
                 selfpos = self.GetSelfPos()
                 target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos[0])
