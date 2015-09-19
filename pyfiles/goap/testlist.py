@@ -9,7 +9,7 @@ def example():
 	action = Action_List('pickup_spear', 
 			['at_armory','empty_hands'], 
 			['hold_spear'],
-			['empty_hands'], 5)
+			['empty_hands'])
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()
@@ -17,7 +17,7 @@ def example():
 	action = Action_List('dropoff_spear', 
 			['at_armory', 'hold_spear'], 
 			['empty_hands'], 
-			['hold_spear'], 5)
+			['hold_spear'])
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()

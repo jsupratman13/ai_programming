@@ -86,20 +86,10 @@ def main():
 #	print 'updated model',
 #	initial_model.PrintList()
 
-def ex_simple():
-	initial_model = List(['ready_to_move', 'empty_backpack','empty_hands'])
-	goal = ['carry_food']
-	actions = hunting_motion_ex()
-	task = PlanningTask(initial_model, actions, goal)
-	print 'Solving the present planning problem'
-	plan = task.depth_first_search(8)
-	print 'Plan: ',
-	print plan
-
 
 if __name__ == '__main__':
 	try:
-		ex_simple()
+		main()
 	
 	except (KeyboardInterrupt,SystemExit):
 		sys.exit()
