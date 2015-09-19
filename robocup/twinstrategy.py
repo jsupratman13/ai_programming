@@ -57,9 +57,9 @@ def normal_walk_to_destLC(robot, destlc, step_width, use_theta = False):
     
     wx = int(x/5)
     wy = int(y/4)
-    wt = wth
+    wt = th
 
-    robot.DebugLogln("Walk: 0, " + str(wt) + ", " + str(wx) + ", 0, " + str(wy))
+#    robot.DebugLogln("Walk: 0, " + str(wt) + ", " + str(wx) + ", 0, " + str(wy))
     robot.Walk(0, wt, wx, 12, wy)
 
 def follow_path_normal_walk(robot, path, step_width):
@@ -379,26 +379,34 @@ class FW(pyenv.Robot):
                 break
 
     def FwSupport(self):
+        self.PanDeg(0)
         for id in [1,2,3,4,5,6]:
             if self.GetCommonString(id) == 'Striker':
                 striker_id = id
                 break
-        while self.GetCommonString(striker_id) == 'Striker':
-            striker_pos = self.GetCommonGlobalPos(striker_id, self.HLOBJECT_ROBOT, self.GetOurColor())
-            if len(striker_pos)>0:
-                selfpos = self.GetSelfPos()
-                striker_pos = [(striker_pos[0][0], striker_pos[0][1], striker_pos[0][2])]
-                target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos)
-                x, y, th = target_lc[0]
-                target_lc = ((x,y+500+th))
-                if tactics.geometry.Distance(target_lc) > 800:
-                    #Use Approach Target Instead?
-                    plan_lc =  plan_path_with_obstacle_avoidanceLC(self, target_lc)
-                    follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
+        while True:
+            if striker_id:
+                if self.GetCommonString(striker_id) == 'Supporter':
+                    self.SetCommonString('Striker')
+                    self.status = 'APPROACH_BALL'
+                    break
                 else:
-                    self.Cancel()
-        self.SetSendCommonString('Striker')
-        self.status = 'APPROACH_BALL'
+                    striker_pos = self.GetCommonGlobalPos(striker_id, self.HLOBJECT_ROBOT, self.GetOurColor())
+                    if len(striker_pos) > 0:
+                        striker_pos = ((striker_pos[0][0], striker_pos[0][1], striker_pos[0][2]))
+                        selfpos = self.GetSelfPos()
+                        target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos)
+                        dist_lc = tactics.geometry.Deistance(target_lc)
+                        self.DebugLogln('dist_lc: ' + str(dist_lc))
+                        if dist_lc > 600:
+                            plan_lc = plan_path_with_obstacle_avoidanceLC(self, target_lc)
+                            follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
+                        else:
+                            #approach stuff
+                            pass
+            else:
+                self.DebugLogln('striker id not found')
+                break
                 
     def RoleCheck(self):
         role = self.GetCommonString(self.id)
@@ -415,7 +423,7 @@ class FW(pyenv.Robot):
             arg = 'SEARCH_BALL'                                              # Set Common Info
        
         self.SetSendCommonInfo(True)
-        self.SetCommonString("Supporter")                                                  # Set Common String
+        self.SetCommonString("Striker")                                                  # Set Common String
 #        self.SetCommonString("Supporter")
         self.start_time = time.time()                                               # Set Start Time
         self.should_relocalize = True
