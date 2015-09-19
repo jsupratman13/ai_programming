@@ -230,7 +230,7 @@ class FW(pyenv.Robot):
                     walk_th = Limit(target_direction_deg, 10, -10)
                     self.Walk(0,walk_th,0,12,0)
                 elif math.fabs(ball_y_lc) > 50:
-                    walk_y = Limit(ball_y_lc*0.1, self.max_stride_y, -self.max_stride_y)
+                    walk_y = Limit(ball_y_lc, self.max_stride_y, -self.max_stride_y)
                     walk_y = (walk_y / math.fabs(walk_y)) * max(math.fabs(walk_y), 4)
                     self.Walk(0, 0, 0, 12, walk_y)
                 else:
@@ -380,10 +380,7 @@ class FW(pyenv.Robot):
 
     def FwSupport(self):
         self.PanDeg(0)
-        for id in [1,2,3,4,5,6]:
-            if self.GetCommonString(id) == 'Striker':
-                striker_id = id
-                break
+        striker_id = SearchStriker()
         while True:
             if striker_id:
                 if self.GetCommonString(striker_id) == 'Supporter':
@@ -397,17 +394,31 @@ class FW(pyenv.Robot):
                         selfpos = self.GetSelfPos()
                         target_lc = tactics.geometry.CoordTransGlobalToLocal(selfpos, striker_pos)
                         dist_lc = tactics.geometry.Deistance(target_lc)
+                        targetdir = tactics.geometry.DirectionDeg(target_lc)
                         self.DebugLogln('dist_lc: ' + str(dist_lc))
                         if dist_lc > 600:
                             plan_lc = plan_path_with_obstacle_avoidanceLC(self, target_lc)
                             follow_path_normal_walk(self, plan_lc, self.mid_stride_x * 5)
                         else:
-                            #approach stuff
-                            pass
+                            if math.fabs(targetdir) > 30:
+                                walkth = Limit(targetdir, 10, -10)
+                                self.walk_period(0,walkth, 0, 12,0)
+                            elif math.fabs(target_lc[0]) > 100:
+                                walk_y = Limit(ball_y_lc, self.max_stride_y, -self.max_stride_y)
+                                self.Walk(0, 0, 0, 12, walk_y)
+                            else:
+                                self.Cancel()
+                                self.DebugLogln('Arrive')
             else:
                 self.DebugLogln('striker id not found')
-                break
-                
+                striker_id = SearchStriker()
+
+    def SearchStriker(self):
+        for id in [1,2,3,4,5,6]:
+            if self.GetCommonStrind(id) == 'Striker':
+                return id
+        return False
+
     def RoleCheck(self):
         role = self.GetCommonString(self.id)
         return role
