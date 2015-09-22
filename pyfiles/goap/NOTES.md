@@ -1,5 +1,8 @@
 Notes for GOAP
 
 ##Goap is composed of two things
-##1.Finite State Mechanism
+##1.Finite State Machine
 ##2.A-star search
+
+##Finiite State Machine or FSM is amodel of compuation based on hypothetical machine made of one or more state. Only a single state can be activeaat the same time, so the machine must transition from one state to another in order to perform different action
+##can be represented by graph where the NODES are the STATES ande the EDGES are TRANSITIONS
