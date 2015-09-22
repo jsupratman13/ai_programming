@@ -78,6 +78,11 @@ class Planner(object):
 			assert False, 'plan does not exist'
 		pass
 
+class AstarSearch(object):
+	def __init__(self):
+		open_list = []
+		close_list = []
+
 
 def distance_to_state(state1, state2):
 	score = 0
