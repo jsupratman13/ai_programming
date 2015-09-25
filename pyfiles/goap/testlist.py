@@ -1,5 +1,5 @@
 import sys
-from simplegoap import World, Action_List
+from goap import World, Action_List
 
 def example():
 	model = World(['at_armory', 'empty_backpack', 'empty_hands'])
@@ -9,7 +9,7 @@ def example():
 	action = Action_List('pickup_spear', 
 			['at_armory','empty_hands'], 
 			['hold_spear'],
-			['empty_hands'])
+			['empty_hands'],5)
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()
@@ -17,7 +17,7 @@ def example():
 	action = Action_List('dropoff_spear', 
 			['at_armory', 'hold_spear'], 
 			['empty_hands'], 
-			['hold_spear'])
+			['hold_spear'],5)
 	model.UpdateList(action)
 	print 'Updated Model: ',
 	model.PrintList()

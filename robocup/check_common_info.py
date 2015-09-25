@@ -14,7 +14,7 @@ while True:
         if initial_string != robot.GetCommonString(robot.id):
             initial_string = robot.GetCommonString(robot.id)
             past_time = current_time
-	    current_time = time.time()
+            current_time = time.time()
             time_from_inital = current_time - initial_time
             time_from_last = current_time - past_time
             robot.DebugLogln('String cut ocured')

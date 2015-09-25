@@ -32,13 +32,8 @@ class World(object):
 			if status not in self.current_list:
 				return False
 		return True
-	
-	def create_successor(self, action):
-		successor_model = List(list(self.current_list))
-		successor_model.UpdateList(action)
-		return successor_model
 
-class Action_List(object):
+class ActionList(object):
 	def __init__(self, name, precondition, add_list, del_list, get_cost):
 		self.name = name
 		self.precondition = precondition
