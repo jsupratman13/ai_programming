@@ -34,7 +34,7 @@ class World(object):
 		return True
 	
 	def create_successor(self, action):
-		successor_model = List(list(self.current_list))
+		successor_model = World(list(self.current_list))
 		successor_model.UpdateList(action)
 		return successor_model
 
