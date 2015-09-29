@@ -6,20 +6,68 @@ from tools.decorator import classproperty
 from rcl import SoccerAgent, Action, WorldState
 
 
-class Initial(rcl.SoccerRole):
-    def __init__(self):
-        conf_file = 'kid/actionconf/highkick-strategy.cnf'
-        rcl.SoccerRole.__init__(self, 1, conf_file)
-    
+class Wingman(rcl.SoccerRole):
+    def __init__(self, id_):
+        conf_file = "kid/actionconf/kid-strategy.cnf"
+        rcl.SoccerRole.__init__(self, id_, conf_file)
+        self.__home_pos = None
+
     def _get_updated_home_pos_gl(self, world_state):
-        return None
+        another_players = [ap for ap in world_state.teammates if ap.arrpos_gl]
+        for ap in another_players:
+            pcs = self.__parse_common_string(ap.common_string)                      #TODO: UPDATE Stuff
+            if len(pcs) != 2:
+                continue
+            role_name, goal_name = pcs
+            if role_name == "Attacker":
+                target_pos = ap.arrpos_gl[0]
+                break
+
+        if target_pos:
+            if world_state.self_state.pos[0] > target_pos[0]:
+                offset = 1000
+            else:
+                offset = -1000
+
+            if tools.geometry.distance2points(world_state.self_state.pos, target_pos) > 900:
+                home_pos = target_pos + offset
+            else: 
+                home_pos = world_state.self_state.pos
+
+        else:
+            home_pos = world_state.self_state.pos
+        
+        return home_pos
+
+    def _get_updated_goal(self, world_state):
+        if not world_state.permitted_intrusion_circle:
+            world_state.permitted_intrusion_circle = True
+        
+        if not self.symbol_dict[rcl.WorldState.K_ON_TARGET_POS]:
+            goal_t = goal.on_target_pos
+        else:
+            goal_t = goal.tracking_ball
+        
+        return goal_t
 
     def _get_updated_action_list(self, goal):
         return []
 
-    def _get_updated_goal(self, world_state):
-        return kid.goal.ball_in_goal
-     
+
+    def __parse_common_string(self, common_string):                         #TODO update stuff
+        if common_string:
+            tokens = common_string.split(' ')
+        else:
+            tokens = []
+        
+        if len(tokens) == 3 and tokens[0] == "Keeper":
+            tokens = tokens[1:]
+
+        elif len(tokens) != 2:
+            tokens = []
+
+        return tokens
+
 class TwinStrategy(rcl.Strategy):
     def __init__(self):
         rcl.Strategy.__init__(self)
@@ -52,7 +100,7 @@ class TwinStrategy(rcl.Strategy):
         another_players = [ap for ap in world_state.teammates if ap.arrpos_gl]
         
         keeper_clear_state = False
-        contains_striker = False
+        contains_attacker = False
         for ap in another_players:
             pcs = self.__parse_common_string(ap.common_string)                      #TODO: UPDATE Stuff
             if len(pcs) != 2:
@@ -97,14 +145,13 @@ class TwinStrategy(rcl.Strategy):
                     if ap.ball_arrpos_gl and tools.geometry.distance2points(ap.ball_arrpos_gl[0], ap.arrpos_gl[0]) < ball_dist + offset_threshold_dist:
                         role_cls = kid.role.defender
                         break
-                   
-#		    ball_gl = ap.ball_arrpos_gl
-#                    if ball_gl:
-#                        ball_dist_player = tools.geometry.distance2points(ap.arrpos_gl, ball_gl[0])
-#                        if ball_dist < ball_dist_player:
-#                            role_cls = kid.role.attacker
-#                            break
+###########Update
 
+
+                    if ap.ball_arrpos_gl and tools.geometry.distance2points(ap.arrpos_gl[0], ap.ball_arrpos_gl[0]) > tools.geometry.distance2points(world_state.self_state.pos, ap.ball_arrpos_gl[0]):
+                        role_cls = kid.role.attacker                   
+                        break
+###################
                 else:
                     role_cls = kid.role.attacker
 
