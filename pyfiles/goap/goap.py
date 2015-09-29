@@ -7,6 +7,7 @@ class World(object):
 
 	def GoalList(self, goal):
 		self.goal_list = goal
+		return self.goal_list
 
 	def PrintList(self):
 		for status in self.current_list:
@@ -21,8 +22,8 @@ class World(object):
 			if status in self.current_list:
 				self.current_list.remove(status)
 
-	def AchieveGoal(self, goal):
-		for status in goal:
+	def AchieveGoal(self):
+		for status in self.goal_list:
 			if status not in self.current_list:
 				return False
 		return True
@@ -62,46 +63,69 @@ class Planner(object):
 		self.initial_model = initial_model
 		self.available_actions = available_actions
 		self.goal = goal
-	
+
+	def Goal(self, goals):
+		self.goal = goals
+		for goal in self.goals:
+			if goal not in self.available_actions:
+				assert False, 'goal not in available actions'
+
 	def planning(self, action_list, goal_list):
 		plan_list = []
 		pass
 
 	def process(self):
-		plan = self.planning(available_actions, goal)
+		plan = self.planning(self.available_actions, self.goal)
 		if plan is None:
 			assert False, 'plan does not exist'
 		pass
 
+	def check(self):
+		for status in self.available_actions:
+			print status,
+		print ''
+
 class AstarSearch(object):
-	def __init__(self):
+	def __init__(self,initial_list, goal_list, add_list, del_list, weight):
+		_path = {'nodes': {},
+			'node_id': 0,
+			'goal': goal_list,
+			'append': add_list,
+			'remove': del_list,
+			'cost': weight,
+			'action_node': {},
+			'olist':{},
+			'clist':{}
+			}
 		open_list = []
 		close_list = []
 
 
-def distance_to_state(state1, state2):
-	score = 0
+	def distance_to_state(state1, state2):
+		score = 0
 	
-	for state in state2:
-		if state not in state1:
-			score += 1
+		for state in state2:
+			if state not in state1:
+				score += 1
 
-	for state in state1:
-		if state not in state2:
-			score += 1
+		for state in state1:
+			if state not in state2:
+				score += 1
 	
-	return score
+		return score
 
-def condition_met(state1, state2):
-	for state in state2:
-		if state in state1:
-			return True
-	return False
+	def condition_met(state1, state2):
+		for state in state2:
+			if state in state1:
+				return True
+		return False
+
+	def frontier(self):
+		pass
+
+	def check2(self):
+		print 'class check ok'
 
 if __name__ == '__main__':
-	state1 = ['yuck', 'wonder', 'weird']
-	state2 = ['wonder']
-
-	score = distance_to_state(state1, state2)
-	print score
+	pass
 	
