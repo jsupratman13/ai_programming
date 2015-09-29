@@ -1,8 +1,8 @@
 import socket, sys, time
 from pyenv import FallError, Robot, GameStateChanged, env
 
-
 def self_communication(robot):
+    global initial_string, current_time, initial_time
     robot.WaitUntilStatusUpdated()
     if initial_string != robot.GetCommonString(robot.id):
         initial_string = robot.GetCommonString(robot.id)
@@ -11,11 +11,12 @@ def self_communication(robot):
         time_from_initial = current_time - initial_time
         time_from_last_cut = current_time - past_time
         robot.DebugLogln('String cut occured')
-        robot.DebugLogln('Time from initial: ' + str(time_from_initial)
+        robot.DebugLogln('Time from initial: ' + str(time_from_initial))
         robot.DebugLogln('Time from last cut: ' + str(time_from_last_cut))
 
 
 def team_communication(robot, other_id):
+    global initial_string, current_time, initial_time
     robot.WaitUntilStatusUpdated()
     if initial_string != robot.GetCommonString(other_id):
         initial_string = robot.GetCommonString(other_id)
@@ -24,7 +25,7 @@ def team_communication(robot, other_id):
         time_from_initial = current_time - initial_time
         time_from_last_cut = current_time - past_time
         robot.DebugLogln('String cut occured')
-        robot.DebugLogln('Time from initial: ' + str(time_from_initial)
+        robot.DebugLogln('Time from initial: ' + str(time_from_initial))
         robot.DebugLogln('Time from last cut: ' + str(time_from_last_cut))
 
 robot = Robot()
