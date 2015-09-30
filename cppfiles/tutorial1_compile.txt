@@ -1,0 +1,34 @@
+--complie c files--
+cc [filename].c -o [filename]
+(or)
+gcc [filename].c -o [filename]
+(or)
+make [filename] (assuming that [filename.c] exist)
+
+./[filename]
+
+--compile c++ files--
+g++ [filename].cpp -o [filename]
+(or)
+make [filename] (assuming that [filename.c] exist)
+
+./[filename]
+
+
+--symbolic information/warning message--
+(c)
+cc -g -Wall [filename].c -o executable
+(cpp)
+g++ -g -Wall [filename].c -o executable
+
+--compile c that uses math function--
+cc [filename].c -o executable -lm
+
+--compile cpp with xlib graphic function--
+g++ [filename].cpp -o executable -lX11
+
+--compile multiple source code--
+(c)
+cc [filename].c [filename2].c (...) -o executable
+(cpp)
+g++ [filename].cpp [filename2].cpp (...) -o [filename3]
