@@ -382,6 +382,7 @@ class FW(pyenv.Robot):
         self.PanDeg(0)
         striker_id = SearchStriker()
         while True:
+            self.WaitUntilStatusUpdated()
             if striker_id:
                 if self.GetCommonString(striker_id) == 'Supporter':
                     self.SetCommonString('Striker')

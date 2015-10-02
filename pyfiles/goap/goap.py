@@ -63,6 +63,7 @@ class Planner(object):
 		self.initial_model = initial_model
 		self.available_actions = available_actions
 		self.goal = goal
+		self.astar = AstarSearch(self.initial_model, self.goal,3,2,4)
 
 	def Goal(self, goals):
 		self.goal = goals
@@ -72,6 +73,7 @@ class Planner(object):
 
 	def planning(self, action_list, goal_list):
 		plan_list = []
+		self.check()
 		pass
 
 	def process(self):
@@ -82,8 +84,9 @@ class Planner(object):
 
 	def check(self):
 		for status in self.available_actions:
-			print status,
+			print status
 		print ''
+
 
 class AstarSearch(object):
 	def __init__(self,initial_list, goal_list, add_list, del_list, weight):
@@ -123,8 +126,6 @@ class AstarSearch(object):
 	def frontier(self):
 		pass
 
-	def check2(self):
-		print 'class check ok'
 
 if __name__ == '__main__':
 	pass
