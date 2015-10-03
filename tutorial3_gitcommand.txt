@@ -1,0 +1,50 @@
+--how to delete branch on network--
+git push origin :[branch name]
+
+--how to add new branch to network--
+git push -u origin [branch name]
+
+--how to create new branch on local--
+git branch [branch name]
+
+--how to reset branch in local--
+git checkout .
+(or specific file)
+git checkout [file name]
+
+--update network to local--
+git pull!!
+
+--switching branch--
+git checkout [branch]
+
+---upate local to network---
+git add [file name] or git rm[file name]
+git commit -m "message"
+git push origin [branch]
+
+---check branch--
+git branch (-a)#for all branch
+
+--update branch to master--
+git fetch
+git rebase origin/master
+
+--create new repository from command line--
+echo # python_goap >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/jsupratman13/python_goap.git
+git push -u origin master
+
+--complete git bash guide--
+http://www.typecastexception.com/post/2012/09/08/Basic-Git-Command-Line-Reference-for-Windows-Users.aspx#BASH-NAVIGATE-FILE-SYSTEM
+
+--clone repository--
+git clone https://github.com/[username]/[repositoryname].git
+
+--merge within local--
+git merge [branchname]
+
+
