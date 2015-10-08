@@ -1,3 +1,6 @@
+--run python--
+python [filename]
+
 --complie c files--
 cc [filename].c -o [filename]
 (or)
@@ -5,14 +8,16 @@ gcc [filename].c -o [filename]
 (or)
 make [filename] (assuming that [filename.c] exist)
 
-./[filename]
-
 --compile c++ files--
 g++ [filename].cpp -o [filename]
 (or)
 make [filename] (assuming that [filename.c] exist)
 
-./[filename]
+--run c/c++ files--
+(after compile)
+./[filename] (assuming that output file exit)
+(or)
+./a.exe (default output file)
 
 
 --symbolic information/warning message--
