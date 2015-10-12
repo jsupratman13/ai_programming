@@ -1,4 +1,7 @@
 ###goap for example
+import math
+import operator
+
 
 class World(object):
 	def __init__(self, current_list):
@@ -40,7 +43,7 @@ class ActionList(object):
 		self.precondition = precondition
 		self.add_list = add_list
 		self.del_list = del_list
-		self.get_cost = get_cost
+		self.cost = get_cost
 
 	def PrintList(self):
 		print 'action: ' + self.name
@@ -55,7 +58,7 @@ class ActionList(object):
 		print 'del_list: ',
 		for remove in self.del_list:
 			print remove,
-		print""
+		print ""
 		print 'cost: '+ str(self.get_cost)
 
 class Planner(object):
@@ -63,7 +66,7 @@ class Planner(object):
 		self.initial_model = initial_model
 		self.available_actions = available_actions
 		self.goal = goal
-		self.astar = AstarSearch(self.initial_model, self.goal,3,2,4)
+		self.astar = AstarSearch(self.initial_model, self.goal, self.available_actions)
 
 	def Goal(self, goals):
 		self.goal = goals
@@ -71,24 +74,25 @@ class Planner(object):
 			if goal not in self.available_actions:
 				assert False, 'goal not in available actions'
 
-	def planning(self, action_list, goal_list):
-		plan_list = []
-		self.check()
-		pass
-
 	def process(self):
-		plan = self.planning(self.available_actions, self.goal)
+		plan = self.astar.planning()
+		self.check()
 		if plan is None:
 			assert False, 'plan does not exist'
 		pass
 
 	def check(self):
-		for status in self.available_actions:
-			print status
 		print ''
+		for status in self.available_actions:
+			status.PrintList()
+			print ''
+		for status in self.goal:
+			print status
 
 
 class AstarSearch(object):
+
+	'''
 	def __init__(self,initial_list, goal_list, add_list, del_list, weight):
 		_path = {'nodes': {},
 			'node_id': 0,
@@ -102,6 +106,44 @@ class AstarSearch(object):
 			}
 		open_list = []
 		close_list = []
+	'''
+	def __init__(self, current_list, goal_list, action_list):
+		self.initial_list = current_list
+		self.current_list = self.initial_list
+		self.goal_list = goal_list
+		self.action_list = action_list
+
+		self.visited = []
+		self.frontier = []
+		self.neighbor_list = []
+		self.close_list = []
+		self.open_list = []
+
+	def planning(self):
+		self.neighbor(self.initial_list)
+		
+		plan_list = self.outline(self.initial_list)
+
+		while True:
+			plans = {}
+			plan_cost = []
+			if len(plan_list) <= 1:
+				break
+			for plan in plan_list:
+				plans[str(plan)] = cost_calc(plan)
+#TODO			plan.sort() need to sort list accordingly to cost
+			plan_list = plan_list[0]
+
+				
+		return plan_list
+
+	def neighbor(self, current_list):
+		for action in self.action_list:
+			if action.precondition in current_list:
+				self.neighbor_list.append(action)
+				neighbor_exist = True
+		if not neighbor_exist:
+			assert False, 'combination of precondition does not exist (no neighbor)'
 
 
 	def distance_to_state(state1, state2):
@@ -117,16 +159,45 @@ class AstarSearch(object):
 	
 		return score
 
+	def cost_calc(self, plan):
+#TODO		implement heuristic calculation
+		total_cost = 0
+		for action in plan:
+			total_cost += action.cost
+		return int(total_cost)
+
 	def condition_met(state1, state2):
 		for state in state2:
 			if state in state1:
 				return True
 		return False
+		
+	def outline(self, current_list):
+		path = []
+		if self.condition_met(self.initial_list, self.current_list):
+			return path
 
-	def frontier(self):
-		pass
+		self.neighbor(current_list)
+		for states in self.neighbor_list:
+			if states not in self.frontier:
+				self.frontier.append(states)
+				frontier_continue = True
 
+		for option in self.frontier:
+			if option not in self.visited:
+				self.visited.append(option)
+#TODO				update LIST
+				path = self.outline(current_list)
+				return path
+		
 
 if __name__ == '__main__':
-	pass
+	tec = {}
+	tec['big'] = 8;
+	ex = 9
+	ex2 = ['low', 'high']
+	tec[str(9)] = 10;
+	tec[str(ex2)] = 11;
+	sort_tec = sorted(tec.items(), key=operator.itemgetter(1))
+	print sort_tec
 	

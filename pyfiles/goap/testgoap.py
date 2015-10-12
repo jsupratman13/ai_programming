@@ -15,6 +15,7 @@ def main():
 	actions.append(ActionList('AdjustToKick', ['have_ball', 'ball_straight'], ['ball_kickarea'], [], 8))
 	actions.append(ActionList('Shoot', ['ball_kickarea', 'ball_straight', 'have_ball'], ['ball_in_target'], ['ball_kickarea', 'ball_straight', 'have_ball'], 5))
 
+
 	task = Planner(initial_list, actions, goals)	
 	plans = task.process()
 
