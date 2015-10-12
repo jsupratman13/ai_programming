@@ -37,3 +37,12 @@ g++ [filename].cpp -o executable -lX11
 cc [filename].c [filename2].c (...) -o executable
 (cpp)
 g++ [filename].cpp [filename2].cpp (...) -o [filename3]
+
+--pip install--
+easy_install.pip
+
+--install .whl files--
+pip install [filename]
+
+--update .whl files--
+pip install --upgrade [filename]
