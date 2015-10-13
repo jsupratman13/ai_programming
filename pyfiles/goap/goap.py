@@ -59,7 +59,7 @@ class ActionList(object):
 		for remove in self.del_list:
 			print remove,
 		print ""
-		print 'cost: '+ str(self.get_cost)
+		print 'cost: '+ str(self.cost)
 
 class Planner(object):
 	def __init__(self, initial_model, available_actions, goal):
@@ -77,9 +77,9 @@ class Planner(object):
 	def process(self):
 		plan = self.astar.planning()
 		self.check()
-		if plan is None:
+		if not plan:
 			assert False, 'plan does not exist'
-		pass
+		return plan
 
 	def check(self):
 		print ''
@@ -88,6 +88,7 @@ class Planner(object):
 			print ''
 		for status in self.goal:
 			print status
+			print ''
 
 
 class AstarSearch(object):
@@ -120,44 +121,29 @@ class AstarSearch(object):
 		self.open_list = []
 
 	def planning(self):
+		plan_list = []
+		plans = {}
 		self.neighbor(self.initial_list)
+#		plan_list = [self.outline(self.initial_list)]
+		if len(plan_list) <= 1:
+			return plan_list
 		
-		plan_list = self.outline(self.initial_list)
+		for plan in plan_list:
+			plans[str(plan)] = cost_calc(plan)
+		
+		plan_list = sorted(plans.items(), key=operator.itemgetter(1))
+		plan_list = plan_list[0][0]
 
-		while True:
-			plans = {}
-			plan_cost = []
-			if len(plan_list) <= 1:
-				break
-			for plan in plan_list:
-				plans[str(plan)] = cost_calc(plan)
-#TODO			plan.sort() need to sort list accordingly to cost
-			plan_list = plan_list[0]
-
-				
 		return plan_list
 
 	def neighbor(self, current_list):
+		neighbor_exist = False
 		for action in self.action_list:
 			if action.precondition in current_list:
 				self.neighbor_list.append(action)
 				neighbor_exist = True
-		if not neighbor_exist:
-			assert False, 'combination of precondition does not exist (no neighbor)'
-
-
-	def distance_to_state(state1, state2):
-		score = 0
-	
-		for state in state2:
-			if state not in state1:
-				score += 1
-
-		for state in state1:
-			if state not in state2:
-				score += 1
-	
-		return score
+#		if not neighbor_exist:
+#			assert False, "neighbor doesn't exist"
 
 	def cost_calc(self, plan):
 #TODO		implement heuristic calculation
@@ -166,7 +152,7 @@ class AstarSearch(object):
 			total_cost += action.cost
 		return int(total_cost)
 
-	def condition_met(state1, state2):
+	def condition_met(self, state1, state2):
 		for state in state2:
 			if state in state1:
 				return True
@@ -188,8 +174,7 @@ class AstarSearch(object):
 				self.visited.append(option)
 #TODO				update LIST
 				path = self.outline(current_list)
-				return path
-		
+				return path	
 
 if __name__ == '__main__':
 	tec = {}
@@ -200,4 +185,5 @@ if __name__ == '__main__':
 	tec[str(ex2)] = 11;
 	sort_tec = sorted(tec.items(), key=operator.itemgetter(1))
 	print sort_tec
-	
+	print sort_tec[0]
+	print sort_tec[0][0]	

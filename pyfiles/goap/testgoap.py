@@ -19,6 +19,7 @@ def main():
 	task = Planner(initial_list, actions, goals)	
 	plans = task.process()
 
+	print 'Formulated Plan\n'
 	for plan in plans:
 		print plan,
 	print ''

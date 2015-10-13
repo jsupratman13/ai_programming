@@ -1,0 +1,71 @@
+Notes for GOAP
+
+Goal Oriented Action Planning or goap is an artificial intelligence system for agents that allows them to plan a sequence of actions to satisfy a particular goal.Sequence of action depends not only on the goal but also on the current sate of the world and agent
+
+Goap is composed of two things
+1.Finite State Machine(STRIPS modelling)
+2.A-star search
+
+Finiite State Machine or FSM is amodel of compuation based on hypothetical machine made of one or more state. 
+-Only a single state can be activeaat the same time, so the machine must transition  one state to another in order to perform different action.
+-In terms of astar algorithm, it can be represented by graph where the NODES are the STATES ande the EDGES are TRANSITIONS.
+-FSM stay in one state until an event triggers a transition to the other state. Therefore, when programming using FSM, one must know how each of the events transition to another place
+
+Trigger transition is dependent on the WORLD STATE
+-know the current status of self
+-ex. how much ammo you have, do you know where you are, position, orientation
+
+Main difference between GOAP and FSM: AUTOMATED PLANNING
+-instead of triggering transition to other state, the Astar in GOAP navigates and plan the path between transition
+
+Automated planning focus on long-term and abstract
+-NOT: move left or move forward etc how to climb each step of the ladder
+-YES: taking cover(do you need to hide?are you hurt?is there place to hide?) etc need to get from bottom to top of ladder
+
+
+STandford Research Institute Problem Solver (STIPS)-theoratical approach of problem solving (1971)
+
+==========================================
+ex. of STRIPS Modelling
+initial state: at(A), adjacent(A,B)
+goal state: at(B)
+
+actions: move(X,Y)
+preconditions: at(X), adjacent(X,Y)
+postcondition(reactions): not at(X), at(Y)
+==========================================
+==========================================
+ex of STRIPS in shooting game
+Goal: Guard, Kill, Dodge, Cover, Ambush
+
+Actions: Idle, Attack, DodgeShuffle, DodgeRoll, AttackMelee, GotoNode, DodgeCovered etc.
+==========================================
+Strips in FSM
+-each action and goal that a NPC use have their own STRIPS
+-each STRIPS action requires core actions from FSM(attack)
+-STRIPS plan would cause the transitions between states as the FSM needed to shift state several times in order to execute all action within plan.
+
+Strips Modelling allow versatility on NPC
+-NPC could be given different goals and actions that would become part of its behavior
+-Different action but use system
+
+Dynamic - respond
+Coordinate - work together(only illusion though, not actually working together-->NPC goal manager manage their GOALS but doesnt override them)
+Interesting - value their own life
+
+ex. minimize threat
+-attackplayer
+ -shoot
+ -blind fire
+-avoid getting hurt
+ -run cover
+ -becareful to avoid getting hurt
+
+[plan short but replan a lot]
+
+Variation:
+Killzone, Transforms game use 'HTN planning system' hierarchical task network-primitave(STRIP), compund(multiple state at once(create more abstract))
+GOAP
+HTN Planning
+BehaviorTree
+Utility Systems
