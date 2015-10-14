@@ -38,6 +38,8 @@ cc [filename].c [filename2].c (...) -o executable
 (cpp)
 g++ [filename].cpp [filename2].cpp (...) -o [filename3]
 
+
+
 --pip install--
 easy_install.pip
 
@@ -46,3 +48,21 @@ pip install [filename]
 
 --update .whl files--
 pip install --upgrade [filename]
+
+
+
+--kill process in simulation--
+kill -9 %1
+kill -9 [number from ps aux]
+(or)
+sudo killall -KILL python
+(for window)
+taskkill /f /im [number from tasklist]
+
+
+--check process--
+ps aux | grep [file name]
+(for window)
+tasklist /v
+
+
