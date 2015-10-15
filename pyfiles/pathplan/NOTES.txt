@@ -1,31 +1,78 @@
 Notes for Astar search
 
-##Grid and Graph
+--Grid and Graph--
 
-##Breadth First Search
-###The key idea for all of these algorithms is to keep track of an expanding ring called frontier.
-###implementation
-###1.pick and remove LOCATION from FRONTIER
-###2.mark the location as VISITED to not repeat the same process
-###3.expand the ring by looking for NEIGBORS(see grid.py for more info). any neighbors not seen yet is added to frontier.
+Breadth First Search
+-The key idea for all of these algorithms is to keep track of an expanding ring called frontier.
+implementation
+1.pick and remove LOCATION from FRONTIER
+2.mark the location as VISITED to not repeat the same process
+3.expand the ring by looking for NEIGBORS(see grid.py for more info). any neighbors not seen yet is added to frontier.
 
-##Dijkstra's Algorithm
-###similar to breadth first search, it utilize cost of movement in path finding
-###starts from the start and explores all possibility until goal
+Dijkstra's Algorithm
+-similar to breadth first search, it utilize cost of movement in path finding
+-starts from the start and explores all possibility until goal
 
-##Heuristic Search
-###Heuristic is a technique to find problem quickly at the cost of accuracy etc. Basically a rough estimation
-###fast but doesnt guarantee the best path
-###starts from goal and head toward the start
+Heuristic Search
+-Heuristic is a technique to find problem quickly at the cost of accuracy etc. Basically a rough estimation
+-fast but doesnt guarantee the best path
+-starts from goal and head toward the start
 
-##Astar
-###dijkstra finds the best shortest path but waste time exploring all other option while greedy best explores the promising direction but not the best shortest path. 
-###astar utilize both distance from start and estimation from goal
-###similar to dijkstra, it explore the same set of location but the heuristic function visit the LOCATION in diffrent order
+Astar
+-dijkstra finds the best shortest path but waste time exploring all other option while greedy best explores the promising direction but not the best shortest path. 
+-astar utilize both distance from start and estimation from goal
+-similar to dijkstra, it explore the same set of location but the heuristic function visit the LOCATION in diffrent order
 
-##Which path?
-###Find path for all: Breadth if movement cost is same, Dijkstra if movment cost vary
-###find path to one: use Astar or greedy (if greedy use astar if inadmissible heurisitc)
-###inadmissible cost is to never overestimate the cost to the goal ex. total cost is lower than the lowest cost to goal
+--Which path?--
+-Find path for all: Breadth if movement cost is same, Dijkstra if movment cost vary
+-find path to one: use Astar or greedy (if greedy use astar if inadmissible heurisitc)
+-inadmissible cost is to never overestimate the cost to the goal ex. total cost is lower than the lowest cost to goal
 
+
+--Variation--
+-flow field pathfinding
+-Generic Algorithm
+
+Astar search
+f = g+h, g(path) = path cost, h(path)=h(s)=estimated distance to goal
+
+ex.
+s->a->b->c->g
+ 1  2  2  3  = path cost
+    h
+s = 7
+a = 6
+b = 2
+c = 1
+g = 0
+      (current+path cost) + h
+s = (0+7)
+s-a = (0+1) + 6
+s-a-b = (1+2) + 2
+s-a-b-c = (3+2) + 1
+s-a-b-c-g = (5+2) + 0
+
+h must be admissible
+h(s) - h(s') <= c(s, s')
+ex. 
+    h(a) - h(c) <= 5
+    6 - 1 = 5 = 5 it is admissible
+
+    h(a) - h(b) <= 2
+    6 - 2 = 4 != 2 therefore a to be is not admissible
+
+    -----\
+  a<---\  \
+s<  \   c-g
+  - -b/
+    
+    b
+s = 7
+a = 6
+b = 2 --> 4
+c = 1 --> 2
+g = 0
+
+s, 0+7			closelist = {s}
+s-a, (0+1)+6  s-b
 
