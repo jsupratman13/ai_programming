@@ -34,7 +34,13 @@ Astar
 -Generic Algorithm
 
 Astar search
-f = g+h, g(path) = path cost, h(path)=h(s)=estimated distance to goal
+f = g+h, g(path) = path cost, h(path)=h(s)=estimated distance to goal, f= estimated total cost of path through n to goal
+
+Best First Search
+f = h
+
+Uniform Cost search
+f = g
 
 ex.
 s->a->b->c->g
