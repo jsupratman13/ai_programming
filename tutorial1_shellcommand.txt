@@ -13,6 +13,9 @@ g++ [filename].cpp -o [filename]
 (or)
 make [filename] (assuming that [filename.c] exist)
 
+--complie c++/c files with windows.h--
+g++ -mwindows [filename]
+
 --run c/c++ files--
 (after compile)
 ./[filename] (assuming that output file exit)
