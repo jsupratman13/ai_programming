@@ -92,22 +92,6 @@ class Planner(object):
 
 
 class AstarSearch(object):
-
-	'''
-	def __init__(self,initial_list, goal_list, add_list, del_list, weight):
-		_path = {'nodes': {},
-			'node_id': 0,
-			'goal': goal_list,
-			'append': add_list,
-			'remove': del_list,
-			'cost': weight,
-			'action_node': {},
-			'olist':{},
-			'clist':{}
-			}
-		open_list = []
-		close_list = []
-	'''
 	def __init__(self, current_list, goal_list, action_list):
 		self.initial_list = current_list
 		self.current_list = self.initial_list
@@ -133,7 +117,6 @@ class AstarSearch(object):
 		
 		plan_list = sorted(plans.items(), key=operator.itemgetter(1))
 		plan_list = plan_list[0][0]
-
 		return plan_list
 
 	def neighbor(self, current_list):
@@ -154,36 +137,60 @@ class AstarSearch(object):
 
 	def condition_met(self, state1, state2):
 		for state in state2:
-			if state in state1:
-				return True
-		return False
+			if state not in state1:
+				print 'Missing: ' + str(state) + 'from initial list'
+				return False
+		for state in state1:
+			if state not in state2:
+				print 'Missing: ' + str(state) + 'from current list'
+				return False
+		return True
 		
 	def outline(self, current_list):
-		path = []
-		if self.condition_met(self.initial_list, self.current_list):
-			return path
+	#TODO:how to take care of world list?
+		world = World(current_list)
+		self.open_list = [[0, 'start']]
+		self.clost_list = []
+		while self.open_list:
+			self.open_list = sorted(self.open_list)
+			current_state = self.open_list[0] #self.open_list.pop()
+			neigbor_list = self.neighbor(current_list)
+			for successor in neighbor_list:
+				#successor_list = UPDATE List
+				if self.condition_met(self.goal_list, successor_list):
+					return path #
+				successor_cost = current_state[0] + successor.cost
+				# if succesor in self.open_list:
+				#	self._openlist pop
+				#	if succcessor_cost > self list cost: continues
+				# if successor in self.close_list:
+				#	self. close list pop
+				# i	if successor _cost > self list cost: continue
 
-		self.neighbor(current_list)
-		for states in self.neighbor_list:
-			if states not in self.frontier:
-				self.frontier.append(states)
-				frontier_continue = True
+				self.open_list.append{[successor_cost, successor)
+			self.close_list.append(curren_state)
 
-		for option in self.frontier:
-			if option not in self.visited:
-				self.visited.append(option)
-#TODO				update LIST
-				path = self.outline(current_list)
-				return path	
+#initialize open and close list
+#leave f=0, put start in ol
+#while ol is not empty
+#	find node with least f on ol and call it "q"   q is current node
+#	pop off q from ol
+#	generate successor and set their parents to q
+#	for each succesor
+#		if successor is goal, stop
+#		successor.g = q.g + path
+#		successor.h = distance from goal to successor
+#		successor.f = g + h
+#
+#		if same_node in open list is same as succssor but better, skip successor
+#		if same_node in close list is same as succssor but better, skip succsor
+#		else add successor to open list
+#	push q to close list
 
 if __name__ == '__main__':
-	tec = {}
-	tec['big'] = 8;
-	ex = 9
-	ex2 = ['low', 'high']
-	tec[str(9)] = 10;
-	tec[str(ex2)] = 11;
-	sort_tec = sorted(tec.items(), key=operator.itemgetter(1))
-	print sort_tec
-	print sort_tec[0]
-	print sort_tec[0][0]	
+	tec = [[9, 'big']]
+	so = [7, 'tec']
+	pi = [9, 'arg']
+	tec.append(so)
+	tec.append(pi)
+	print sorted(tec)	
