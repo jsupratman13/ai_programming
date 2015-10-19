@@ -2,12 +2,25 @@ Notes for Astar search
 
 --Grid and Graph--
 
+--Depth First Search--
+-go through one step at a time
+-simplest but the least efficsent method
+ex
+color position
+	for successor to node position
+		if successor color pass
+		if successor is goal stop
+		else successor
+
 Breadth First Search
 -The key idea for all of these algorithms is to keep track of an expanding ring called frontier.
 implementation
 1.pick and remove LOCATION from FRONTIER
 2.mark the location as VISITED to not repeat the same process
 3.expand the ring by looking for NEIGBORS(see grid.py for more info). any neighbors not seen yet is added to frontier.
+ex
+
+
 
 Dijkstra's Algorithm
 -similar to breadth first search, it utilize cost of movement in path finding
@@ -72,7 +85,7 @@ ex.
 s<  \   c-g
   - -b/
     
-    b
+    h
 s = 7
 a = 6
 b = 2 --> 4
@@ -81,4 +94,24 @@ g = 0
 
 s, 0+7			closelist = {s}
 s-a, (0+1)+6  s-b
+
+
+
+--sample effect--
+initialize open and close list
+leave f=0, put start in ol
+while ol is not empty
+	find node with least f on ol and call it "q"   q is current node
+	pop off q from ol
+	generate successor and set their parents to q
+	for each succesor
+		if successor is goal, stop
+		successor.g = q.g + path
+		successor.h = distance from goal to successor
+		successor.f = g + h
+
+		if node with the same position as successor is in ol which has lower f than succsor skip succssor
+		if node with the same position as succosr is in cl has f lower than successor skip succsor
+		else add node to ol
+	push q to close list
 
