@@ -73,7 +73,7 @@ def main():
 	actions = hunting_motion_ex()
 	
 	task = PlanningTask(model, actions, goal)
-	plan = task.depth_first_search(8)
+	plan = task.depth_first_search(7)
 	print 'Plan: ',
 	print plan
 
