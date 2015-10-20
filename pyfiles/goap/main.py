@@ -37,7 +37,6 @@ def hunting():
 
 	actions = []
 	#Name, precondition, addlist, dellist, cost
-
 	actions.append(ActionList('pickup_spear',['at_armory', 'empty_hands'], ['hold_spear'], ['empty_hands'], 5))
 
 	actions.append(ActionList('store_spear',['at_armory','hold_spear'],['empty_hands'],['hold_spear'], 5))
@@ -66,11 +65,47 @@ def hunting():
 #	print '\nTotal Cost: ' + str(plans[0])
 
 
+def warefare():
+	initial_state = ['no_ammo','engage_enemy']
+	goals = ['enemy_eliminated']
+
+	actions = []
+	#Name, precondition, addlist, delist, cost
+	actions.append(ActionList('move_in', ['engage_enemy', 'weapons_armed'], ['near_enemy'],['away_from_danger'],5))
+
+	actions.append(ActionList('reload', ['has_ammo', 'in_cover'], ['weapons_loaded'], [], 5))
+	
+	actions.append(ActionList('take_cover', ['engage_enemy'], ['in_cover'], [], 10))
+	
+	actions.append(ActionList('shoot_enemy', ['weapons_armed', 'near_enemy'], ['enemy_eliminated'], ['engage_enemy','no_ammo'], 5))
+	
+	actions.append(ActionList('arm_weapon', ['weapons_loaded'],['weapons_armed'],[], 5))
+	
+	actions.append(ActionList('find_ammo', ['no_ammo','away_from_danger'],['has_ammo'], ['no_ammo'], 5))
+	
+	actions.append(ActionList('retreat', [], ['away_from_danger'], ['near_enemy'], 5))
+	
+	actions.append(ActionList('heal', ['injured', 'away_from_danger'], [], ['injured'], 5))
+	
+	actions.append(ActionList('patrol', [], ['patrol'],['engage_enemy'],5))
+
+	actions.append(ActionList('found_enemy', ['patrol'], ['engage_enemy'],['patrol'], 5))
+
+	task = Planner(initial_state, actions, goals)
+	plans = task.process()
+	print '\nFomulated Plan: ' + str(plans[1])
+	print '\nCurrent State: ' + str(plans[2])
+#	print '\nTotal Cost: ' + str(plans[0])
+
+
 if __name__ == '__main__':
 	try:
 		initial_time = time.time()
+		
 		#accelitesoccer()
-		hunting()
+		#hunting()
+		warefare()
+		
 		print '\ntime: ' + str(time.time() - initial_time)
 
 	except Exception, e:
