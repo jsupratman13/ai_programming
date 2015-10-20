@@ -1,7 +1,7 @@
 ###goap for example
 import math
 import operator
-
+import time
 
 class World(object):
 	def __init__(self, current_list):
@@ -72,11 +72,12 @@ class Planner(object):
 	def goal_check(self):
 		for goal in self.goal:
 			for action in self.available_actions:
-				if goal not in action.add_list:
-					assert False, 'goal not in available actions'
+				if goal in action.add_list:
+					return True
+		assert False, 'goal not in available actions'
 
 	def process(self):
-#		self.goal_check()
+		self.goal_check()
 		plan = self.astar.searchtree(self.initial_model)
 #		self.check()
 		if not plan:
@@ -100,9 +101,6 @@ class AstarSearch(object):
 		self.goal_list = goal_list
 		self.action_list = action_list
 
-		self.visited = []
-		self.frontier = []
-		self.neighbor_list = []
 		self.close_list = []
 		self.open_list = []
 
@@ -115,9 +113,6 @@ class AstarSearch(object):
 			else:
 				neighbor_list.append(action)
 		return neighbor_list
-
-	def cost_calc(self, plan):
-		pass
 
 	def condition_met(self, state1, state2):
 		for state in state1:
@@ -137,10 +132,11 @@ class AstarSearch(object):
 		
 	def searchtree(self, current_list):
 		self.open_list = [[0, '',current_list]]
-		self.clost_list = []
 		neighbor_list = []
-		n = 0
+		initial_time = time.time()
 		while self.open_list:
+			if (time.time()-initial_time) > 5:
+				assert False, 'unable to calibrate plans in 5 seconds'
 			self.open_list = sorted(self.open_list)
 			current_state = self.open_list.pop(0)
 			neighbor_list = self.neighbor(current_state[2])
