@@ -24,9 +24,10 @@ class World(object):
 		for status in action.del_list:
 			if status in self.current_list:
 				self.current_list.remove(status)
+		return self.current_list
 
-	def AchieveGoal(self):
-		for status in self.goal_list:
+	def AchieveGoal(self, goal_list):
+		for status in goal_list:
 			if status not in self.current_list:
 				return False
 		return True
@@ -66,17 +67,18 @@ class Planner(object):
 		self.initial_model = initial_model
 		self.available_actions = available_actions
 		self.goal = goal
-		self.astar = AstarSearch(self.initial_model, self.goal, self.available_actions)
+		self.astar = AstarSearch(self.goal, self.available_actions)
 
-	def Goal(self, goals):
-		self.goal = goals
-		for goal in self.goals:
-			if goal not in self.available_actions:
-				assert False, 'goal not in available actions'
+	def goal_check(self):
+		for goal in self.goal:
+			for action in self.available_actions:
+				if goal not in action.add_list:
+					assert False, 'goal not in available actions'
 
 	def process(self):
-		plan = self.astar.planning()
-		self.check()
+#		self.goal_check()
+		plan = self.astar.searchtree(self.initial_model)
+#		self.check()
 		if not plan:
 			assert False, 'plan does not exist'
 		return plan
@@ -92,9 +94,9 @@ class Planner(object):
 
 
 class AstarSearch(object):
-	def __init__(self, current_list, goal_list, action_list):
-		self.initial_list = current_list
-		self.current_list = self.initial_list
+	def __init__(self, goal_list, action_list):
+#		self.initial_list = current_list
+#		self.current_list = self.initial_list
 		self.goal_list = goal_list
 		self.action_list = action_list
 
@@ -104,93 +106,67 @@ class AstarSearch(object):
 		self.close_list = []
 		self.open_list = []
 
-	def planning(self):
-		plan_list = []
-		plans = {}
-		self.neighbor(self.initial_list)
-#		plan_list = [self.outline(self.initial_list)]
-		if len(plan_list) <= 1:
-			return plan_list
-		
-		for plan in plan_list:
-			plans[str(plan)] = cost_calc(plan)
-		
-		plan_list = sorted(plans.items(), key=operator.itemgetter(1))
-		plan_list = plan_list[0][0]
-		return plan_list
-
 	def neighbor(self, current_list):
-		neighbor_exist = False
+		neighbor_list = []
 		for action in self.action_list:
-			if action.precondition in current_list:
-				self.neighbor_list.append(action)
-				neighbor_exist = True
-#		if not neighbor_exist:
-#			assert False, "neighbor doesn't exist"
+			for precon in action.precondition:
+				if precon not in current_list:
+					break
+			else:
+				neighbor_list.append(action)
+		return neighbor_list
 
 	def cost_calc(self, plan):
-#TODO		implement heuristic calculation
-		total_cost = 0
-		for action in plan:
-			total_cost += action.cost
-		return int(total_cost)
+		pass
 
 	def condition_met(self, state1, state2):
-		for state in state2:
-			if state not in state1:
-				print 'Missing: ' + str(state) + 'from initial list'
-				return False
 		for state in state1:
 			if state not in state2:
-				print 'Missing: ' + str(state) + 'from current list'
 				return False
 		return True
+	
+	def update_list(self, successor, current_list):
+		new_list = list(current_list)
+		for suc_add in successor.add_list:
+			if suc_add not in current_list:
+				new_list.append(suc_add)
+		for suc_del in successor.del_list:
+			if suc_del in current_list:
+				new_list.remove(suc_del)
+		return new_list
 		
-	def outline(self, current_list):
-	#TODO:how to take care of world list?
-		world = World(current_list)
-		self.open_list = [[0, 'start']]
+	def searchtree(self, current_list):
+		self.open_list = [[0, '',current_list]]
 		self.clost_list = []
+		neighbor_list = []
+		n = 0
 		while self.open_list:
 			self.open_list = sorted(self.open_list)
-			current_state = self.open_list[0] #self.open_list.pop()
-			neigbor_list = self.neighbor(current_list)
+			current_state = self.open_list.pop(0)
+			neighbor_list = self.neighbor(current_state[2])
+
 			for successor in neighbor_list:
-				#successor_list = UPDATE List
-				if self.condition_met(self.goal_list, successor_list):
-					return path #
+				#model = World(current_state[2])
 				successor_cost = current_state[0] + successor.cost
-				# if succesor in self.open_list:
-				#	self._openlist pop
-				#	if succcessor_cost > self list cost: continues
-				# if successor in self.close_list:
-				#	self. close list pop
-				# i	if successor _cost > self list cost: continue
-
-				self.open_list.append{[successor_cost, successor)
-			self.close_list.append(curren_state)
-
-#initialize open and close list
-#leave f=0, put start in ol
-#while ol is not empty
-#	find node with least f on ol and call it "q"   q is current node
-#	pop off q from ol
-#	generate successor and set their parents to q
-#	for each succesor
-#		if successor is goal, stop
-#		successor.g = q.g + path
-#		successor.h = distance from goal to successor
-#		successor.f = g + h
-#
-#		if same_node in open list is same as succssor but better, skip successor
-#		if same_node in close list is same as succssor but better, skip succsor
-#		else add successor to open list
-#	push q to close list
+				successor_state = [successor_cost, current_state[1]+successor.name+' ', self.update_list(successor, current_state[2])]
+				#model.PrintList()
+				if self.condition_met(self.goal_list, successor_state[2]):
+					return successor_state 
+				for status in self.open_list:
+					if (successor_state[1] == status[1]) and (successor_state[0] > status[0]):
+						break
+				for status in self.close_list:
+					if (successor_state[1] == status[1]) and (successor_state[0] > status[0]):
+						break
+				else: 
+					self.open_list.append(successor_state)
+			self.close_list.append(current_state)
 
 if __name__ == '__main__':
-	tec = [[9, 'big']]
-	so = [7, 'tec']
-	pi = [9, 'arg']
-	tec.append(so)
-	tec.append(pi)
-	print sorted(tec)	
+	olist = [['hello'],'bear']
+	llist = ['hello']
+	tlist = ['hello']
+	coplist = list(olist)
+	coplist.append(llist)
+	print coplist
+	print olist
