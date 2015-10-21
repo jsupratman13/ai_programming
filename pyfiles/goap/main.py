@@ -61,7 +61,7 @@ def hunting():
 	task = Planner(initial_state, actions, goals)
 	plans = task.process()
 	print '\nFomulated Plan: ' + str(plans[1])
-	print '\nCurrent State: ' + str(plans[2])
+#	print '\nCurrent State: ' + str(plans[2])
 #	print '\nTotal Cost: ' + str(plans[0])
 
 
@@ -94,7 +94,7 @@ def warefare():
 	task = Planner(initial_state, actions, goals)
 	plans = task.process()
 	print '\nFomulated Plan: ' + str(plans[1])
-	print '\nCurrent State: ' + str(plans[2])
+#	print '\nCurrent State: ' + str(plans[2])
 #	print '\nTotal Cost: ' + str(plans[0])
 
 
