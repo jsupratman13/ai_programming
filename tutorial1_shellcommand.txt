@@ -16,6 +16,9 @@ make [filename] (assuming that [filename.c] exist)
 --complie c++/c files with windows.h--
 g++ -mwindows [filename]
 
+--compile c+/c files with opengl--
+g++ (gcc) [filename] -lfreeglut -lglu32 -lopengl32
+
 --run c/c++ files--
 (after compile)
 ./[filename] (assuming that output file exit)
