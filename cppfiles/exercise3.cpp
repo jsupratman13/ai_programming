@@ -1,3 +1,4 @@
+//exercise3: using windows header file
 #include <windows.h>
 
 int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
