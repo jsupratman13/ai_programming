@@ -135,8 +135,8 @@ class AstarSearch(object):
 		neighbor_list = []
 		initial_time = time.time()
 		while self.open_list:
-			if (time.time()-initial_time) > 7:
-				assert False, 'unable to calibrate plans in 7 seconds'
+			if (time.time()-initial_time) > 10:
+				assert False, 'unable to calibrate plans in 10 seconds'
 			self.open_list = sorted(self.open_list)
 			current_state = self.open_list.pop(0)
 			neighbor_list = self.neighbor(current_state[2])
