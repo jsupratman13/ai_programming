@@ -19,6 +19,11 @@ g++ -mwindows [filename]
 --compile c+/c files with opengl--
 g++ (gcc) [filename] -lfreeglut -lglu32 -lopengl32
 
+--call c from python--
+gcc -Wall -fPIC -c [filename].c -I"C:\python27\include"
+gcc -shared -o [filename].so [filename].o
+(in python import ctypes then [name] = ctypes.CDLL("./[filename].so")
+
 --run c/c++ files--
 (after compile)
 ./[filename] (assuming that output file exit)
