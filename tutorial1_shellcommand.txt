@@ -1,3 +1,13 @@
+--compile tex document--
+pdflatex [filename].tex
+(or)
+latex [filename].tex
+
+--open pdf document--
+open [filename].pdf
+(or if the above doesnt work)
+explorer [filename].pdf
+
 --run python--
 python [filename]
 
