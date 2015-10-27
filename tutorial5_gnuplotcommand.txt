@@ -52,6 +52,10 @@ replot				(basically edit file on spot)
 
 --curve fit with data--
 *must have a plotting data
+f1(x) = a*x + b			(pick a function plus variable to fit data)
+a = 10; b=1			(pick initial value)
+fit f(x) '[name].dat' u 1:2 via a,b
+				(fit parameter to data)
 
 --gnuplot script--
 *must be name [filename].p

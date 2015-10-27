@@ -1,0 +1,44 @@
+--initialization! always begin with this--
+/documentclass[12pt]{article}		([9pt]{report} etc)
+
+--print document--
+/begin{document}
+[anything in here is printed
+/end{document}
+
+--include stuff--
+/title[entername]
+/date[enterdate]
+/author[enterauthor]
+
+--inline equation mode--
+$[equation]$
+
+-display equation mode--
+$$[equation]$$
+
+--subscript--
+_{name}
+
+--superscript--
+^{name}
+
+--fraction--
+\frac{numerator}{denominator}
+
+--greek alphabet--
+\alpha
+\beta
+\gamma
+(etc).
+
+--comment--
+%
+
+--compile tex document--
+pdflatex [filename].tex 		(becareful not to use 'latex' !)
+
+--open pdf file--
+explorer [filename].pdf			(some cases use 'open')
+
+
