@@ -3,40 +3,35 @@ import math
 import operator
 import time
 
-class World(object):
-	def __init__(self, current_list):
+class Status(object):
+	def __init__(self, cost, plans, current_list):
+		self.cost = cost
+		self.plans = plans
 		self.current_list = current_list
-		self.goal_list = []
-
-	def GoalList(self, goal):
-		self.goal_list = goal
-		return self.goal_list
-
+	
 	def PrintList(self):
-		for status in self.current_list:
-			print status,
+		print 'total cost: ' + str(self.cost)
+		print 'current plan: '
+		for plan in plans:
+			print plan,
+		print ''
+		print 'current state: '
+		for state in current_list:
+			print state,
 		print ''
 
-	def UpdateList(self, action):
-		for status in action.add_list:
-			if status not in self.current_list:
-				self.current_list.append(status)
-		for status in action.del_list:
-			if status in self.current_list:
-				self.current_list.remove(status)
-		return self.current_list
+class Action(object): #based on STRIPS model
+	def __init__(self, name, precondition, effects, cost):
+		self.name = name
+		self.precondition = precondition
+		self.effects = effects
+		self.cost = cost
 
-	def AchieveGoal(self, goal_list):
-		for status in goal_list:
-			if status not in self.current_list:
-				return False
-		return True
-
-	def IsExecutable(self, action_list):
-		for status in action_list.precondition:
-			if status not in self.current_list:
-				return False
-		return True
+	def PrintList(self):
+		print 'name: ' + self.name
+		print 'precondition: '
+		print 'effect: '
+		print 'cost: ' + str(self.cost)
 
 class ActionList(object):
 	def __init__(self, name, precondition, add_list, del_list, get_cost):
@@ -96,8 +91,6 @@ class Planner(object):
 
 class AstarSearch(object):
 	def __init__(self, goal_list, action_list):
-#		self.initial_list = current_list
-#		self.current_list = self.initial_list
 		self.goal_list = goal_list
 		self.action_list = action_list
 
@@ -135,17 +128,15 @@ class AstarSearch(object):
 		neighbor_list = []
 		initial_time = time.time()
 		while self.open_list:
-			if (time.time()-initial_time) > 10:
+			if (time.time()-initial_time) > 20:
 				assert False, 'unable to calibrate plans in 10 seconds'
 			self.open_list = sorted(self.open_list)
 			current_state = self.open_list.pop(0)
 			neighbor_list = self.neighbor(current_state[2])
 
 			for successor in neighbor_list:
-				#model = World(current_state[2])
 				successor_cost = current_state[0] + successor.cost
 				successor_state = [successor_cost, current_state[1]+successor.name+' ', self.update_list(successor, current_state[2])]
-				#model.PrintList()
 				if self.condition_met(self.goal_list, successor_state[2]):
 					return successor_state 
 				for status in self.open_list:

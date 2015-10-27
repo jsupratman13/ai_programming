@@ -1,9 +1,8 @@
 import math, sys, traceback, time
-from goap import World, ActionList, Planner
+from goap import ActionList, Planner
 
 def accelitesoccer():
-	model = World([])
-	goals = model.GoalList(['ball_in_target'])
+	goals = ['ball_in_target']
 	initial_state = ['unknown_self_pos', 'unknown_ball_pos','ball_not_in_target', 'dont_have_ball', 'ball_not_straight', 'ball_not_in_kickarea']
 
 	actions = []
@@ -31,9 +30,8 @@ def accelitesoccer():
 #	print '\nTotal Cost: ' + str(plans[0])
 
 def hunting():
-	model = World([])
 	goals = ['have_dinner']
-	initial_state = ['at_armory', 'empty_backpack', 'empty_hands']
+	initial_state = ['at_kitchen', 'empty_backpack', 'empty_hands']
 
 	actions = []
 	#Name, precondition, addlist, dellist, cost
@@ -102,8 +100,8 @@ if __name__ == '__main__':
 	try:
 		initial_time = time.time()
 		
-		#accelitesoccer()
-		#hunting()
+		accelitesoccer()
+		hunting()
 		warefare()
 		
 		print '\ntime: ' + str(time.time() - initial_time)
