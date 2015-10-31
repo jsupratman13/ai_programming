@@ -32,13 +32,14 @@ def cubicBezier(ps, pc1, pc2, pt):
 
 	return xf, yf
 
-def passthroughpoint(p0, p1, p2): #Return control point necessary to pass through point p
-	x0 ,y0, z0 = p0
-	x1, y1, z1 = p1
-	x2, y2, z2 = p2
+def passthroughpoint(ps, pc, pt): #new control point necessary to pass through point pc
+	x0 ,y0 = ps	#start point
+	x1, y1 = pc #pass through point
+	x2, y2 = pt #target point
 	
 	cpx = x1 * 2 - (x0 + x2) / 2
 	cpy = y1 * 2 - (y0 + y2) / 2
+	return cpx,cpy
 
 if __name__ == '__main__':
 	plt.xlim(0,100)
@@ -48,12 +49,16 @@ if __name__ == '__main__':
 	ps = (10,10)
 	pt = (90, 50)
 	pc = (50,90)
-	
+	pc2 = (70,30)
+	cx, cy = passthroughpoint(ps, pc, pt)
+
 	x,y = quadraticBezier(ps, pc, pt)
-	x2, y2 = cubicBezier(ps,pc, (70,30), pt)
+	x2, y2 = cubicBezier(ps, pc, pc2, pt)
+	x3, y3 = quadraticBezier(ps, (cx,cy), pt)
 
 	plt.plot(x,y, 'bo')
 	plt.plot(x2, y2, 'go')
+	plt.plot(x3, y3, 'ko')
 
 	plt.plot(10,10, 'ro')
 	plt.plot(90,50, 'ro')
