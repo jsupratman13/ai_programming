@@ -16,7 +16,6 @@ def quadraticBezier(ps, pt, pc):
 
 	return xf, yf
 
-
 def cubicBezier(ps, pt, pc1, pc2):
 	x0 ,y0 = ps  #start point
 	x1, y1 = pc1 #control point 1
@@ -74,29 +73,36 @@ def passthroughpoint(ps, pt, pc): #new control point necessary to pass through p
 	cpy = y1 * 2 - (y0 + y2) / 2
 	return cpx,cpy
 
+def controlpoint2(ps, pt):
+	x0, y0, th0 = ps
+	x1, y1, th1 = pt
+	
+	d1 = 1000	#Parameter polygon
+	d2 = 1000
+
+	xf1 = x0 + d1*math.cos(th0)
+	yf1 = y0 + d1*math.sin(th0)
+
+	xf2 = x1 + d2*math.cos(math.pi+th1)
+	yf2 = y1 + d2*math.sin(math.pi+th1)
+
+	pc1 = (xf1, yf1)
+	pc2 = (xf2, yf2)
+
+	return pc1, pc2
+
 if __name__ == '__main__':
-	plt.xlim(0,100)
-	plt.ylim(0,100)
+	plt.xlim(-5000,5000)
+	plt.ylim(-3200,3200)
 	plt.grid(True)
 
-	ps = (10,10)
-	pt = (90, 50)
-	pc = (50,90)
-	pc2 = (70,30)
-	cx, cy = passthroughpoint(ps, pt, pc)
+	pt = (0,0)
+	ps = (-3000, 0)
+	pc1, pc2 = controlpoint2((-3000,0,math.pi/2),(0,0,0))
 
-#	x3, y3 = quadraticBezier(ps, pt ,(cx,cy))
-	x4, y4 = BezierCurve(ps,pt,pc, pc2)
-	x, y = BezierCurve(ps, pt, (30,70), (50, 30),(70,90))
+	x, y = BezierCurve(ps, pt, pc1, pc2)
 
 	plt.plot(x,y ,'b-')
-#	plt.plot(x3, y3, 'ko')
-	plt.plot(x4, y4, 'r-')
-	print x
-	plt.plot(10,10, 'ro')
-	plt.plot(90,50, 'ro')
-	plt.plot(70,90, 'ro')
-	plt.plot(50,30, 'ro')
-	plt.plot(30,70, 'ro')
+	plt.plot(ps[0], ps[1], 'ro', pt[0], pt[1], 'ro', pc1[0], pc1[1], 'go', pc2[0], pc2[1], 'go')
 	plt.show()
 	
