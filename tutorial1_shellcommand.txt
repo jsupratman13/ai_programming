@@ -1,7 +1,5 @@
 --compile tex document--
 pdflatex [filename].tex
-(or)
-latex [filename].tex
 
 --open pdf document--
 open [filename].pdf
@@ -33,6 +31,10 @@ g++ (gcc) [filename] -lfreeglut -lglu32 -lopengl32
 gcc -Wall -fPIC -c [filename].c -I"C:\python27\include"
 gcc -shared -o [filename].so [filename].o
 (in python import ctypes then [name] = ctypes.CDLL("./[filename].so")
+
+--compile c/c+ files with eigen--
+g++ [filename] -I"C:\mingw\eigen"
+
 
 --run c/c++ files--
 (after compile)
@@ -88,5 +90,4 @@ taskkill /f /im [number from tasklist]
 ps aux | grep [file name]
 (for window)
 tasklist /v
-
 
