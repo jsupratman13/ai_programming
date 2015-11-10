@@ -38,6 +38,17 @@ _{name}
 --compile tex document--
 pdflatex [filename].tex 		(becareful not to use 'latex' !)
 
+--compile tex document with jarticle--
+platex [filename].tex
+dvipdfmx [filename].dvi
+
+--compile tex document with bibliograpy--
+platex -shell-escape [filename].tex
+pbibtex [filename].aux
+platex [filename].tex
+platex [filename].tex
+dvipdfmx [filename].tex
+
 --open pdf file--
 explorer [filename].pdf			(some cases use 'open')
 
