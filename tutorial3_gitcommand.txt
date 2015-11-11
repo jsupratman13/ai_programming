@@ -1,6 +1,9 @@
 --how to delete branch on network--
 git push origin :[branch name]
 
+--how to delete branch on local--
+git branch -d [branch name]
+
 --how to add new branch to network--
 git push -u origin [branch name]
 
