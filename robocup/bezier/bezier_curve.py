@@ -10,7 +10,7 @@ def quadraticBezier(ps, pt, pc):
 	xf = []
 	yf = []
 
-	for t in np.linspace(0,1): #0<t<1
+	for t in [0,0.2,0.4,0.6,0.8,1]: #0<t<1
 		xf.append(math.pow(1-t,2)*x0+(1-t)*2*t*x1+t*t*x2)
 		yf.append(math.pow(1-t,2)*y0+(1-t)*2*t*y1+t*t*y2)
 
@@ -24,7 +24,7 @@ def cubicBezier(ps, pt, pc1, pc2):
 
 	xf = []
 	yf = []
-	for t in np.linspace(0,1):
+	for t in [0,0.2,0.4,0.6,0.8,1]:
 		xf.append(math.pow(1-t,3)*x0+math.pow(1-t,2)*3*t*x1+(1-t)*3*t*t*x2+t*t*t*x3)
 		yf.append(math.pow(1-t,3)*y0+math.pow(1-t,2)*3*t*y1+(1-t)*3*t*t*y2+t*t*t*y3)
 
@@ -102,7 +102,14 @@ if __name__ == '__main__':
 
 	x, y = BezierCurve(ps, pt, pc1, pc2)
 
-	plt.plot(x,y ,'b-')
+	plt.plot(x,y ,'bo')
 	plt.plot(ps[0], ps[1], 'ro', pt[0], pt[1], 'ro', pc1[0], pc1[1], 'go', pc2[0], pc2[1], 'go')
+	
+#	ps = (x[25], y[25])
+#	pc11, pc21 = controlpoint2((x[25],y[25],math.pi/2), (0,0,0))
+#	x2, y2 = BezierCurve(ps, pt,pc11, pc21)
+#	plt.plot(x2,y2, 'r-')
+#	plt.plot(ps[0], ps[1], 'ro', pc11[0], pc11[1], 'bo', pc21[0], pc21[1], 'bo')
+
 	plt.show()
 	
