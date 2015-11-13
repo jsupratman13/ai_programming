@@ -45,7 +45,7 @@ set multiplot 			(set multiple plot)
 unset multiplot			(unset multiple plot
 
 --save graph as output (save in current dircetory check using pwd)--
-set terminal [type] 		(latex, jpg, png etc)
+set terminal [type] 		(epslatex, jpg, png etc)
 set output '[name].[type]'	
 replot				(basically edit file on spot)
 
