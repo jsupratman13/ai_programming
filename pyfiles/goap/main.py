@@ -100,9 +100,9 @@ if __name__ == '__main__':
 	try:
 		initial_time = time.time()
 		
-		accelitesoccer()
+		#accelitesoccer()
 		hunting()
-		warefare()
+		#warefare()
 		
 		print '\ntime: ' + str(time.time() - initial_time)
 

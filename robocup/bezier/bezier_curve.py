@@ -100,7 +100,7 @@ if __name__ == '__main__':
 	ps = (-3000, 0)
 	pc1, pc2 = controlpoint2((-3000,0,math.pi/2),(0,0,0))
 
-	x, y = BezierCurve(ps, pt, pc1, pc2)
+	x, y = BezierCurve(ps, pt, (-1500,1000))
 
 	plt.plot(x,y ,'bo')
 	plt.plot(ps[0], ps[1], 'ro', pt[0], pt[1], 'ro', pc1[0], pc1[1], 'go', pc2[0], pc2[1], 'go')
