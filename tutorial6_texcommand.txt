@@ -1,21 +1,48 @@
 --initialization! always begin with this--
-/documentclass[12pt]{article}		([9pt]{report} etc)
+\documentclass[option]{classname}
+				(option: 12pt, a4, b5 etc)
+				(classname: jarticle article report book etc)
+\usepackage{packagename}	(packagename: use below)
+
+--jarticle with english name--
+\documentclass[]{jarticle}
+\usepackage[english]{babel}
 
 --print document--
-/begin{document}
-[anything in here is printed
-/end{document}
+\begin{document}
+[anything in here is printed]
+\end{document}
+
+--include graph from outside--
+\usepackage[dvipdfmx]{graphicx}
+...
+\input{filename}
+\hspace{1.6cm} title
+
+--input code--
+\usepackage{listings}
+\lstset{basicstyle=\scriptsize}
+...
+\lstinputlisting[language=[option]{filename} (option: C, Java,Python etc.)
+
+
 
 --include stuff--
-/title[entername]
-/date[enterdate]
-/author[enterauthor]
+\title[entername]
+\date[enterdate]
+\author[enterauthor]
 
 --inline equation mode--
 $[equation]$
 
 -display equation mode--
 $$[equation]$$
+
+--matrix--
+\begin{bmatrix}
+4 & 5\\
+3 & 3\\
+\end{bmatrix}
 
 --subscript--
 _{name}
