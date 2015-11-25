@@ -38,8 +38,7 @@ class Idling(Action):
 
         finally:
             player.set_selfpos((2000,0,0))
-            if has_switch_paused and not player.world.switch_state.state(SoccerAgent.Brain.SWITCH_3) and player.world.game_state == SoccerAgent.Brain.GAME_STATE_PLAYING:
-                player.set_selfpos((2000,0,0))
+
     def get_precondition(self):
         return []
 
@@ -68,7 +67,7 @@ class KickBallToTarget(Action):
             player.motion.cancel()
             player.wait_until_status_updated()
             player.sleep(2.0 if player.world.switch_state.state(SoccerAgent.Brain.SWITCH_1) and self.kick_wait < 2.0 else self.kick_wait)
-            x,y,th = player.get_selfpos()
+            x,y,th = player.world.self_state.pos
             ballarr_lc = player.world.get_estimated_object_pos_lc(SoccerAgent.Brain.BALL, SoccerAgent.Brain.AF_ANY)
             if ballarr_lc:
                 if actionbase.bodymotionfunc.in_kickarea(self.kick_conf, ballarr_lc[0]):
@@ -88,12 +87,6 @@ class KickBallToTarget(Action):
             yield
 
     def apply_behavior(self, world_state):
-        """
-        target_arrpos_gl = self.get_target_arrpos_gl(world_state)
-        if len(target_arrpos_gl) > 0:
-            target_pos_lc = tools.geometry.coord_trans_global_to_local(world_state.self.pos, target_arrpos_gl[0])
-            world_state.set_estimated_object_pos_lc(SoccerAgent.Brain.BALL, SoccerAgent.Brain.AF_ANY, target_pos_lc)
-        """
         return world_state
 
     def get_cost(self, world_state):
@@ -109,27 +102,13 @@ class KickBallToTarget(Action):
     def get_additional_list(self):
         return [(WorldState.K_BALL_IN_TARGET, True), (WorldState.K_BEHIND_BALL_DEFENSIVE_LINE, False)]
 
-class Initial(rcl.SoccerRole):
-    def __init__(self):
-        conf_file = 'kid/actionconf/highkick-strategy.cnf'
-        rcl.SoccerRole.__init__(self, 1, conf_file)
-    
-    def _get_updated_home_pos_gl(self, world_state):
-        return None
-
-    def _get_updated_action_list(self, goal):
-        return []
-
-    def _get_updated_goal(self, world_state):
-        return kid.goal.ball_in_goal
-     
 class TC_Strategy(rcl.Strategy):
     def __init__(self):
         rcl.Strategy.__init__(self)
 
         #default strategic property
         self.__goal_cls = kid.goal.ball_in_goal
-        self.__role_cls = Initial()
+        self.__role_cls = kid.role.neutral
         self.__common_string = ""
 
         #TODO: Delete action_list
@@ -148,67 +127,10 @@ class TC_Strategy(rcl.Strategy):
             Idling(),
         ]
 
-    def __decide_role(self, world_state): #TODO: Implemented
-        if world_state.game_state != rcl.SoccerAgent.Brain.GAME_STATE_PLAYING or not self.symbol_dict[rcl.WorldState.K_KNOW_SELF_POS]:
-            return kid.role.neutral
-        
-        ballarr_gl = world_state.get_estimated_object_pos_gl(rcl.SoccerAgent.Brain.BALL)
-        another_players = [ap for ap in world_state.teammates if ap.arrpos_gl]
-        
-        keeper_clear_state = False
-        contains_attacker = False
-        for ap in another_players:
-            pcs = self.__parse_common_string(ap.common_string)
-            if len(pcs) != 2:
-                continue
-
-            role_name, goal_name = pcs
-            if role_name == "Keeper" and goal_name == "CLEAR":
-                keeper_clear_state = True
-
-            if role_name == "Attacker":
-                contains_attacker = True
-
-            if keeper_clear_state and contains_attacker:
-                break
-        
-        if keeper_clear_state:
-            return kid.role.defender
-
-        if ballarr_gl:
-            ball_dist = tools.geometry.distance2points(world_state.self_state.pos, ballarr_gl[0])
-
-            if self.__role_cls == kid.role.attacker and ball_dist < 1000:
-                role_cls = kid.role.attacker
-            else:
-                bx_gl, by_gl, bt_gl = ballarr_gl[0]
-                ball_dist += 0 if world_state.self_state.pos[0] < bx_gl else world_state.self_state.pos[0] - bx_gl
-                
-                for ap in another_players:
-                    pcs = self.__parse_common_string(ap.common_string)
-                    if len(pcs) != 2:
-                        continue
-
-                    role_name, goal_name = pcs
-
-                    if role_name == "Neutral":
-                        continue
-                    
-                    offset_threshold_dist = 0
-                    if role_name == "Attacker" and self.__role_cls != kid.role.attacker:
-                        offset_threshold_dist = 1000
-
-                    if ap.ball_arrpos_gl and tools.geometry.distance2points(ap.ball_arrpos_gl[0], ap.arrpos_gl[0]) < ball_dist + offset_threshold_dist:
-                        role_cls = kid.role.defender
-                        break
-
-                else:
-                    role_cls = kid.role.attacker
-
-        else:
-            role_cls = kid.role.defender if contains_attacker else kid.role.neutral
-
-        return role_cls
+    def __decide_role(self, world_state):
+        if not self.symbol_dict[WorldState.K_KNOW_SELF_POS]:
+             return kid.role.neutral
+        return kid.role.highkickrole
 
     @property
     def goal_symbol_list(self):
