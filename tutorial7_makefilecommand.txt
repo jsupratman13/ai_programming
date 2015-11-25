@@ -1,0 +1,18 @@
+--compile--
+make
+(or)
+make -f [filename]
+
+overall make file should be something like
+
+[target] : [requirement]
+	[system command]
+
+--comment--
+# [comments]
+
+--variables--
+(ex)
+CC = g++
+$(CC) [filename.cpp]
+

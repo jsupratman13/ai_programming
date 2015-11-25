@@ -47,6 +47,9 @@ g++ [filename] -I"C:\mingw\eigen"
 make 		(search for Makefile)
 make -f [filename]
 
+--compile c/cpp but object file--
+gcc -c [filename]
+
 --symbolic information/warning message--
 (c)
 cc -g -Wall [filename].c -o executable
