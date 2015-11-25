@@ -43,6 +43,10 @@ g++ [filename] -I"C:\mingw\eigen"
 ./a.exe (default output file)
 
 
+--make c files--
+make 		(search for Makefile)
+make -f [filename]
+
 --symbolic information/warning message--
 (c)
 cc -g -Wall [filename].c -o executable
