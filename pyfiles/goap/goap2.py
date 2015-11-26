@@ -4,7 +4,8 @@ class WorldState(object):
 		self.initial_state = None
 		self.goal_state = None
 
-	def set_state(self, **kwargs):
+	def set_initialstate(self, **kwargs):
+		if len(kwargs) != len(self.define_status): assert False, "number of initial state does not match with WorldState"
 		for state in kwargs:
 			if state not in self.define_status:
 				assert False, "initial state does not match with WorldState"
@@ -12,15 +13,16 @@ class WorldState(object):
 	
 	def set_goalstate(self, **kwargs):
 		for state in kwargs:
-			if state not in self.defnie_status:
+			if state not in self.define_status:
 				assert False, "goal state does not correspond with WorldState"	
 		self.goal_state = kwargs
 
 class Action(object):
-	def __init__(self,name):
+	def __init__(self,name, cost):
 		self.name = name
 		self.precondition = None
 		self.effects = None
+		self.cost = cost
 	
 	def set_precondition(self, **kwargs):
 		self.precondition = kwargs
@@ -47,6 +49,14 @@ class Planner(object):
 				if effect not in self.world.define_status:
 					assert False, "%s effect does not match world state" %action.name
 
+	def print_actionlist(self):
+		for action in self.actionlist:
+			print action.name
+	
+	def print_world(self):
+		for status in self.world.initial_state.iteritems():
+			print status,
+
 	def process(self):
 		print 'searching plan'
 		return self.pathplan.formulate()
@@ -69,17 +79,3 @@ class DepthFirstSearch(object):
 	
 	def formulate(self):
 		pass
-
-if __name__ == '__main__':
-	world = WorldState('candy','pink')
-	world.set_state(candy=True, pink=True)
-
-	actionlist = []
-
-	action = Action('eating')
-	action.set_precondition(pink=True)
-	action.set_effects(candy=False)
-	actionlist.append(action)
-
-	plan = Planner(world,actionlist)
-	plan.process()
