@@ -1,3 +1,5 @@
+import copy
+
 class WorldState(object):
 	def __init__(self, *args):
 		self.define_status = args
@@ -87,45 +89,43 @@ class AstarSearch(object):
 		neighbor_list = []
 		for action in self.actionlist:
 			for precondition in action.precondition.iteritems():
-				print precondition[0]
 				if precondition not in parent.current_state.iteritems():
-					print 'precon not match'
 					break
 			else:
 				neighbor_list.append(action)
-				print 'precon match new neighbor'
 		return neighbor_list
 
-	def update_status(self, action, parent): #TODO: copy classes to prevent change simultaneously
-		successor = parent
+	def update_status(self, action, parent):
+		successor = copy.deepcopy(parent)
 		successor.world.current_state.update(action.effects)
-		for suc in successor.world.current_state.iteritems():
-			print suc,
+		successor.actionlist.append(action)
 		successor.cost = successor.cost + action.cost #TODO; heuristic calculation and cost adjustment
 
+		successor.print_plan()
 		return successor
 
 	def condition_met(self, successor):
 		for goal in self.world.goal_state.iteritems():
 			if goal not in successor.world.current_state.iteritems():
+				print 'not yet'
 				return False
+		print 'match\n'
 		return True
 
 	def formulate(self):
 		successor = PartialPlan(self.world, [],0)
 		self.ol.append(successor)
-		parent = self.ol.pop(0)
-		successor_list = self.neighbor(parent.world)
-		for action in successor_list:
-			successor = self.update_status(action, parent)
-#		while self.ol:
+		while self.ol:
 			#TODO: sort ollist in order of least successor cost to greatest
-#			parent = self.ol.pop(0)
-#			successor_list = self.neigbor(parent.world)
-#			for action in successor_list:
-#				successor = upadate_status(action, parent)
-#				if self.condition_met(successor):
-#					return successor.actionlist
+			parent = self.ol.pop(0)
+			successor_list = self.neighbor(parent.world)
+			for action in successor_list:
+				successor = self.update_status(action, parent)
+				if self.condition_met(successor):
+					print 'ok'
+					return successor.actionlist
+				self.ol.append(successor)
+			self.cl.append(parent)
 					
 			
 			
@@ -142,6 +142,11 @@ if __name__ == '__main__':
 	action = Action('get_food', 1)
 	action.set_precondition(eat=False,sleep=False)
 	action.set_effects(eat=True)
+	alist.append(action)
+
+	action = Action('goto_bed', 1)
+	action.set_precondition(eat=True)
+	action.set_effects(sleep=True)
 	alist.append(action)
 
 	task = Planner(world,alist)
