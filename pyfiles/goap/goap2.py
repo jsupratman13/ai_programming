@@ -1,4 +1,4 @@
-import copy
+import copy, itertools
 
 class WorldState(object):
 	def __init__(self, *args):
@@ -70,7 +70,7 @@ class PartialPlan(object):
 		self.cost = calc_cost
 
 	def __repr__(self):
-		return '{}: {}'.format(self.__class__.name__,self.cost)
+		return '{}'.format(self.cost)
 	
 	def __cmp__(self, other):
 		if hasattr(other, 'cost'):
@@ -102,8 +102,6 @@ class AstarSearch(object):
 					break
 			else:
 				neighbor_list.append(action)
-		for nei in neighbor_list:
-			print nei.name
 		return neighbor_list
 
 	def update_status(self, action, parent):
@@ -125,14 +123,21 @@ class AstarSearch(object):
 		successor = PartialPlan(self.world, [],0)
 		self.ol.append(successor)
 		while self.ol:
-			sorted(self.ol)
+			self.ol.sort()
 			parent = self.ol.pop(0)
 			successor_list = self.neighbor(parent)
 			for action in successor_list:
 				successor = self.update_status(action, parent)
 				if self.condition_met(successor):
 					return successor.actionlist
-				self.ol.append(successor)
+				#TODO: skip successor if the same and better one is in olist and clist
+				for other_ol, other_cl in itertools.izip_longest(self.ol,self.cl):
+					if other_ol and successor.actionlist == other_ol.actionlist and successor.cost > other_ol.cost:
+						break
+					if other_cl and successor.actionlist == other_cl.actionlist and successor.cost > other_cl.cost:
+						break
+				else:
+					self.ol.append(successor)
 			self.cl.append(parent)	
 			
 		
@@ -144,12 +149,12 @@ if __name__ == '__main__':
 	
 	alist = []
 
-	action = Action('get_food', 1)
+	action = Action('get_food', 4)
 	action.set_precondition(eat=False,sleep=False)
 	action.set_effects(eat=True)
 	alist.append(action)
 
-	action = Action('get_chicken', 3)
+	action = Action('get_chicken', 1)
 	action.set_precondition(eat=False,sleep=False)
 	action.set_effects(eat=True)
 	alist.append(action)
@@ -160,4 +165,7 @@ if __name__ == '__main__':
 	alist.append(action)
 
 	task = Planner(world,alist)
-	task.process()
+	plans = task.process()
+	print '\nPlan: '
+	for plan in plans:
+		print plan.name
