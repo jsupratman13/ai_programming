@@ -58,10 +58,21 @@ class Planner(object):
 	def print_world(self):
 		for status in self.world.current_state.iteritems():
 			print status,
+	
+	def print_goal(self):
+		for goal in self.world.goal_state.iteritems():
+			print goal,
 
 	def process(self):
-		print 'searching plan'
-		return self.pathplan.formulate()
+		print '\ninitial status: ', 
+		self.print_world()
+		print '\ngoal: ', 
+		self.print_goal()
+		print '\n\ngenerating plan:'
+		plans = self.pathplan.formulate()
+		if plans is None:
+			assert False, "no plan could be generated"
+		return plans
 
 class PartialPlan(object):
 	def __init__(self,world, actionlist, calc_cost):
@@ -129,8 +140,7 @@ class AstarSearch(object):
 			for action in successor_list:
 				successor = self.update_status(action, parent)
 				if self.condition_met(successor):
-					return successor.actionlist
-				#TODO: skip successor if the same and better one is in olist and clist
+					return successor
 				for other_ol, other_cl in itertools.izip_longest(self.ol,self.cl):
 					if other_ol and successor.actionlist == other_ol.actionlist and successor.cost > other_ol.cost:
 						break
@@ -141,31 +151,3 @@ class AstarSearch(object):
 			self.cl.append(parent)	
 			
 		
-
-if __name__ == '__main__':
-	world = WorldState('eat','sleep')
-	world.set_initialstate(eat=False,sleep=False)
-	world.set_goalstate(sleep=True)
-	
-	alist = []
-
-	action = Action('get_food', 4)
-	action.set_precondition(eat=False,sleep=False)
-	action.set_effects(eat=True)
-	alist.append(action)
-
-	action = Action('get_chicken', 1)
-	action.set_precondition(eat=False,sleep=False)
-	action.set_effects(eat=True)
-	alist.append(action)
-
-	action = Action('goto_bed', 1)
-	action.set_precondition(eat=True)
-	action.set_effects(sleep=True)
-	alist.append(action)
-
-	task = Planner(world,alist)
-	plans = task.process()
-	print '\nPlan: '
-	for plan in plans:
-		print plan.name
