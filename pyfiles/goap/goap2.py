@@ -68,6 +68,13 @@ class PartialPlan(object):
 		self.world = world
 		self.actionlist = actionlist
 		self.cost = calc_cost
+
+	def __repr__(self):
+		return '{}: {}'.format(self.__class__.name__,self.cost)
+	
+	def __cmp__(self, other):
+		if hasattr(other, 'cost'):
+			return self.cost.__cmp__(other.cost)
 	
 	def print_plan(self):
 		for state in self.world.current_state.iteritems():
@@ -85,14 +92,18 @@ class AstarSearch(object):
 		self.ol = []
 		self.cl = []
 	
-	def neighbor(self, parent): #TODO: remove repeatitive action
+	def neighbor(self, parent): #brief: neighbor is determine from list of action if precon match and it is not already visited
 		neighbor_list = []
 		for action in self.actionlist:
+			if action in parent.actionlist:
+				continue
 			for precondition in action.precondition.iteritems():
-				if precondition not in parent.current_state.iteritems():
+				if precondition not in parent.world.current_state.iteritems():
 					break
 			else:
 				neighbor_list.append(action)
+		for nei in neighbor_list:
+			print nei.name
 		return neighbor_list
 
 	def update_status(self, action, parent):
@@ -101,34 +112,28 @@ class AstarSearch(object):
 		successor.actionlist.append(action)
 		successor.cost = successor.cost + action.cost #TODO; heuristic calculation and cost adjustment
 
-		successor.print_plan()
+#		successor.print_plan()
 		return successor
 
 	def condition_met(self, successor):
 		for goal in self.world.goal_state.iteritems():
 			if goal not in successor.world.current_state.iteritems():
-				print 'not yet'
 				return False
-		print 'match\n'
 		return True
 
 	def formulate(self):
 		successor = PartialPlan(self.world, [],0)
 		self.ol.append(successor)
 		while self.ol:
-			#TODO: sort ollist in order of least successor cost to greatest
+			sorted(self.ol)
 			parent = self.ol.pop(0)
-			successor_list = self.neighbor(parent.world)
+			successor_list = self.neighbor(parent)
 			for action in successor_list:
 				successor = self.update_status(action, parent)
 				if self.condition_met(successor):
-					print 'ok'
 					return successor.actionlist
 				self.ol.append(successor)
-			self.cl.append(parent)
-					
-			
-			
+			self.cl.append(parent)	
 			
 		
 
@@ -140,6 +145,11 @@ if __name__ == '__main__':
 	alist = []
 
 	action = Action('get_food', 1)
+	action.set_precondition(eat=False,sleep=False)
+	action.set_effects(eat=True)
+	alist.append(action)
+
+	action = Action('get_chicken', 3)
 	action.set_precondition(eat=False,sleep=False)
 	action.set_effects(eat=True)
 	alist.append(action)
