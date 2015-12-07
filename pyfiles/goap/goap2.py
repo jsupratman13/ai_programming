@@ -103,7 +103,7 @@ class AstarSearch(object):
 		self.ol = []
 		self.cl = []
 	
-	def neighbor(self, parent): #brief: neighbor is determine from list of action if precon match and it is not already visited
+	def neighbor(self, parent):
 		neighbor_list = []
 		for action in self.actionlist:
 			if action in parent.actionlist:
