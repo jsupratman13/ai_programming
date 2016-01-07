@@ -12,7 +12,7 @@ class WorldState(object):
 				assert False, "initial state does not match with WorldState"
 		self.current_state = kwargs	
 
-class CompoundTask(object):
+class CompoundTask(list):
 	def __init__(self, name):
 		self.name = name
 		self.method_list = []
@@ -20,7 +20,7 @@ class CompoundTask(object):
 	def set_method_list(self, *args):
 		self.method_list = args
 
-	class Method(object):
+	class Method(list):
 		def __init__(self, name):
 			self.name = name
 			self.preconditions = None
@@ -32,7 +32,7 @@ class CompoundTask(object):
 		def set_subtask(self, *args):
 			self.subtask = args
 
-class PrimativeTask(object):
+class PrimativeTask(list):
 	def __init__(self, name):
 		self.name = name
 		self.preconditions = None
@@ -44,16 +44,20 @@ class PrimativeTask(object):
 	def set_effects(self, **kwargs):
 		self.effects = kwargs
 
-class DecompHistory(object):
+class DecompHistory(list):
 	def __init__(self):
-		self.last_known_state = None
-		self.last_method_list = []
+		self.history_list = []
 
-	def record(self,method):
-		self.last_method_list = method
+	class RecordHistory(list):
+		def __init__(self, current_task, other_methods, task_list, working_state, plans):
+			current_task.method_list = other_methods
+			self.last_recorded_task_list = [current_task]
+			self.last_recorded_task_list.extend(task_list)
+			self.last_recorded_working_state = copy.deepcopy(working_state)
+			self.last_recorded_plans = plans
 
-	def restore(self):
-		return None
+	def RestoreHistory(self):
+		return self.history_list
 
 class Planner(object):
 	def __init__(self, world, root_task):
@@ -76,49 +80,69 @@ class Planner(object):
 class DepthFirstSearch(object):
 	def __init__(self, world, root_task):
 		self.plans = []
-		self.current_world = world
-		self.working_world = copy.deepcopy(self.current_world)
-		self.processing_task = [root_task]
+		self.working_state = world
+		self.task_list = [root_task]
 		self.method_list = []
+		self.decomphistory = DecompHistory()
 
-	def condition_met(self, task):
-		for precondition in task.preconditions.iteritems():
-			if precondition not in self.working_world.current_state.iteritems():
+	def condition_met(self, method):
+		for precondition in method.preconditions.iteritems():
+			if precondition not in self.working_state.current_state.iteritems():
 				return False
 		return True
 
+	def print_method(self, method_list):
+		for method in method_list:
+			print str(method.name) + ' subtask: ',
+			for task in method.subtask:
+				print str(task.name)
+
 	def find_method(self, task):
-		return False
+		method_list = []
+		for method in task.method_list:
+			if self.condition_met(method):
+				method_list.append(method)
+		return method_list
 
 	def formulate(self):
-		while self.processing_task:
-#			print self.working_world.current_state
-			current_task = self.processing_task.pop(0)
+		while self.task_list:
+			current_task = self.task_list.pop(0)
 			if str(current_task.__class__.__name__) == 'CompoundTask':
-				for method in current_task.method_list:
-					if self.condition_met(method):
-						self.method_list.append(method)
+				print '\ncompound: ' + str(current_task.name)
+				self.method_list = self.find_method(current_task)
+				self.print_method(self.method_list)
+				
 				if self.method_list:
 					m = self.method_list.pop(0)
-					self.processing_task.append(m.subtask) #find way to append in order
-					#record rest of list
+					history = self.decomphistory.RecordHistory(current_task, self.method_list, self.task_list, self.working_state, self.plans)
+					self.task_list[0:0] = m.subtask #extend and insert in beginning of list
+					self.decomphistory.history_list.append(history)
+
 				else:
-					pass
-					#restore last session
+					print '**no available method, returning to last decomposed task**'
+					history_list = self.decomphistory.RestoreHistory()
+					if history_list:
+						history = history_list.pop()
+						self.task_list = history.last_recorded_task_list
+						self.working_state= history.last_recorded_working_state
+						self.plans = history.last_recorded_plans
+					else:
+						return None
 				
 			elif str(current_task.__class__.__name__) == 'PrimativeTask':
+				print '\nprimative: ' + str(current_task.name)
 				if self.condition_met(current_task):
-					self.working_world.current_state.update(current_task.effects)
+					self.working_state.current_state.update(current_task.effects)
 					self.plans.append(current_task)
 				
 				else:
-					pass
-					#restore to last task
+					print '**condition not met, reset plans and returning to last decomposed task**'
+					history_list= self.decomphistory.RestoreHistory()
+					history = history_list.pop()
+					self.task_list = history.last_recorded_task_list
+					self.working_state = history.last_recorded_working_state
+					self.plans = history.last_recorded_plans
 			else:
-				print current_task.name
-				print str(current_task.__class__.__name__)
 				assert False, 'Unknown Task Type'
-		return self.plans
 
-if __name__ == '__main__':
-	print 'ok'
+		return self.plans

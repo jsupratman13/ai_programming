@@ -2,7 +2,7 @@ from htn import WorldState, Planner, CompoundTask, PrimativeTask
 
 if __name__ == '__main__':
 	world = WorldState('enemy_dead', 'tired', 'enemy_found', 'near_enemy', 'fear')
-	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=True)
+	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=False)
 
 	charge = PrimativeTask('Charge')
 	charge.set_precondition(enemy_found=True, near_enemy=False, fear=False)
@@ -53,5 +53,6 @@ if __name__ == '__main__':
 
 	planning = Planner(world, root)
 	plans = planning.process()
+	print '\nPlan: '
 	for plan in plans:
-		print str(plan.__class__.__name__)
+		print plan.name
