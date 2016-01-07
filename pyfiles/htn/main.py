@@ -1,3 +1,10 @@
+################################
+# @file main.py                #
+# @brief HTN Planner example   #
+# @author Joshua Supratman     #
+# @date 2016/01/07             #
+################################
+
 from htn import WorldState, Planner, CompoundTask, PrimativeTask
 
 if __name__ == '__main__':

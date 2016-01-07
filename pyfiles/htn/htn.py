@@ -1,3 +1,10 @@
+################################
+# @file htn.py                 #
+# @brief HTN Planner core      #
+# @author Joshua Supratman     #
+# @date 2016/01/07             #
+################################
+
 import copy, time, itertools
 
 class WorldState(object):
