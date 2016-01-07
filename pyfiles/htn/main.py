@@ -6,8 +6,11 @@
 ################################
 
 from htn import WorldState, Planner, CompoundTask, PrimativeTask
+import time
 
 if __name__ == '__main__':
+	initial_time = time.time()
+
 	world = WorldState('enemy_dead', 'tired', 'enemy_found', 'near_enemy', 'fear')
 	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=False)
 
@@ -63,3 +66,6 @@ if __name__ == '__main__':
 	print '\nPlan: '
 	for plan in plans:
 		print plan.name
+
+	print 'total time: ' + str(time.time()-initial_time)
+

@@ -1,48 +1,46 @@
-## GOAP improvement
+################################
+# @file main.py                #
+# @brief GOAP example          #
+# @author Joshua Supratman     #
+# @date 2016/01/07             #
+################################
 
-from goap2 import WorldState, Action, Planner
+from goap import WorldState, Action, Planner
+import time
 
 if __name__=='__main__':
-	world = WorldState('hungry', 'has_food', 'in_kitchen', 'tired', 'in_bed')
-	world.set_initialstate(hungry=True, has_food=False, in_kitchen=False, in_bed=False, tired=True)
-	world.set_goalstate(tired=False)
+	initial_time = time.time()
+
+	world = WorldState('enemy_dead', 'tired', 'enemy_found', 'near_enemy', 'fear')
+	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=False)
+	world.set_goalstate(enemy_dead=True)
 
 	actionlist = []
 	
-	action = Action('eat',1)
-	action.set_precondition(hungry=True, has_food=True, in_kitchen=False)
-	action.set_effects(hungry=False, has_food=False)
-	actionlist.append(action)
+	charge = Action('Charge', 3)
+	charge.set_precondition(enemy_found=True, near_enemy=False, fear=False)
+	charge.set_effects(near_enemy=True)
+	actionlist.append(charge)
 
-	action = Action('cook',1)
-	action.set_precondition(hungry=True, has_food=False, in_kitchen=True)
-	action.set_effects(has_food=True)
-	actionlist.append(action)
+	movein = Action('MoveIn', 5)
+	movein.set_precondition(enemy_found=True, near_enemy=False, fear=True)
+	movein.set_effects(near_enemy=True)
+	actionlist.append(movein)
 
-	action = Action('sleep',1)
-	action.set_precondition(tired=True, in_bed=True)
-	action.set_effects(tired=False)
-	actionlist.append(action)
+	shoot = Action('Shoot',1)
+	shoot.set_precondition(enemy_dead=False, near_enemy=True, enemy_found=True)
+	shoot.set_effects(enemy_dead=True, near_enemy=False, enemy_found=False)
+	actionlist.append(shoot)
 
-	action = Action('go_to_bed',1)
-	action.set_precondition(in_bed=False, hungry=False)
-	action.set_effects(in_bed=True)
-	actionlist.append(action)
-	
-	action = Action('go_to_kitchen',10)
-	action.set_precondition(in_kitchen=False)
-	action.set_effects(in_kitchen=True)
-	actionlist.append(action)
-	
-	action = Action('leave_kitchen',1)
-	action.set_precondition(in_kitchen=True)
-	action.set_effects(in_kitchen=False)
-	actionlist.append(action)
-	
-	action = Action('order_pizza',1)
-	action.set_precondition(has_food=False, hungry=True)
-	action.set_effects(has_food=True)
-	actionlist.append(action)
+	idle = Action('Idle',3)
+	idle.set_precondition(enemy_found=False, tired=True)
+	idle.set_effects(tired=False)
+	actionlist.append(idle)
+
+	walk = Action('Walk', 5)
+	walk.set_precondition(enemy_found=False, tired=False)
+	walk.set_effects(tired=True)
+	actionlist.append(walk)
 
 	task = Planner(world, actionlist)
 	plans = task.process()
@@ -51,4 +49,6 @@ if __name__=='__main__':
 	print '\ncurrent status: '
 	for state in plans.world.current_state.iteritems():
 		print state,
+	
+	print '\ntotal time: ' + str(time.time()-initial_time)
 
