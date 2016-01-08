@@ -46,9 +46,6 @@ if __name__=='__main__':
 	plans = task.process()
 	for plan in plans.actionlist:
 		print plan.name
-	print '\ncurrent status: '
-	for state in plans.world.current_state.iteritems():
-		print state,
-	
+
 	print '\ntotal time: ' + str(time.time()-initial_time)
 
