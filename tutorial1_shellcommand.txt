@@ -9,6 +9,9 @@ explorer [filename].pdf
 --run python--
 python [filename]
 
+--run python3--
+python -3 [filename]	(#!python3 on the script)
+
 --complie c files--
 cc [filename].c -o [filename]
 (or)
@@ -20,6 +23,10 @@ make [filename] (assuming that [filename.c] exist)
 g++ [filename].cpp -o [filename]
 (or)
 make [filename] (assuming that [filename.c] exist)
+
+
+--complie c++/c files with opencv--
+gcc [filename] pkg-config --cflags opencv pkg-config --libs opencv
 
 --complie c++/c files with windows.h--
 g++ -mwindows [filename]
