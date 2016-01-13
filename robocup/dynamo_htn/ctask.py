@@ -1,30 +1,32 @@
 from ccl import Task, WorldState
+import ptask
+
 
 class KickMode:
 	def __init__(self):
 		self.task_type = 'Compound'	
-		self.method_list = [HighKickMode(),NormalKickMode(),DribbleMode()]
+		self.method_list = [KickMode.HighKickMode,KickMode.NormalKickMode,KickMode.DribbleMode]
 
 	class HighKickMode:
-		def precondition(self):
-			pass
+		def preconditions(self):
+			return [(WorldState.K_BALL_IN_GOAL_AREA, True)]
 
 		def subtask(self):
-			pass
+			return [ptask.HighKickBall]
 
 	class NormalKickMode:
-		def precondition(self):
-			pass
+		def preconditions(self):
+			return []
 
 		def subtask(self):
-			pass
+			return [ptask.KickBall]
 
 	class DribbleMode:
-		def precondition(self):
-			pass
+		def preconditions(self):
+			return []
 
-		def subtas(self):
-			pass
+		def subtask(self):
+			return [ptask.DribbleBall]
 			
 if __name__ == '__main__':
 	print 'ok'
