@@ -1,5 +1,6 @@
 import abc
 import time
+from htn import Planner
 
 class Task(object):
 	__metaclass__ = abc.ABCMeta
@@ -32,24 +33,24 @@ class WorldState(object):
 			WorldState.K_BALL_IN_TARGET : self._ball_in_target,
 			WorldState.K_IDLE : self._idle,
 		}
-		self._world_status = {key: False for key, state in self._world_rep.items()}
+		self.world_status = {key: False for key, state in self._world_rep.items()}
 
 	def _update(self):
-		for state, key in self._world_status.items():
+		for state, key in self.world_status.items():
 			new_key = self._world_rep[state]()
-			self._world_status[state] = new_key
+			self.world_status[state] = new_key
 
 	def print_state(self):
 		print 'current state: ',
-		for state in self._world_status.items():
-			print state,
-		print '\n'
+		for state,key in self.world_status.items():
+			print state, key
+		print ''
 
 	def _ball_pos(self):
-		return True
+		return False
 
 	def _self_pos(self):
-		return False
+		return True
 
 	def _enemy_pos(self):
 		return True
@@ -70,7 +71,7 @@ class WorldState(object):
 		return False
 
 	def _ball_in_kick_area(self):
-		return True
+		return False
 
 	def _ball_in_goal_area(self):
 		return True
@@ -98,14 +99,13 @@ class SoccerStrategy(object):
 	def __init__(self):
 		self.state = WorldState()
 
-	def run(self, initial_time):
-		for state, key in self.state._world_status.iteritems():
-			print state, key
+	def run(self, root):
+		self.state._update()
+		self.state.print_state()
 
-		while time.time() - initial_time < 5:
-			self.state._update()
-			print 'update'
+		planner = Planner(self.state.world_status, root)
+		plans = planner.process()
+		for task in plans:
+			print str(task.__class__.__name__)
 
-			self.state.print_state()
-
-			time.sleep(2)
+		
