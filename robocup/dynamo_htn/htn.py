@@ -7,50 +7,6 @@
 
 import copy, time, itertools
 
-class WorldState(object):
-	def __init__(self, *args):
-		self.define_status = args
-		self.current_state = None
-
-	def set_initialstate(self, **kwargs):
-		if len(kwargs) != len(self.define_status): assert False, "number of initial state does not match with WorldState"
-		for state in kwargs:
-			if state not in self.define_status:
-				assert False, "initial state does not match with WorldState"
-		self.current_state = kwargs	
-
-class CompoundTask(list):
-	def __init__(self, name):
-		self.name = name
-		self.method_list = []
-	
-	def set_method_list(self, *args):
-		self.method_list = args
-
-	class Method(list):
-		def __init__(self, name):
-			self.name = name
-			self.preconditions = None
-			self.subtask = []
-
-		def set_precondition(self, **kwargs):
-			self.preconditions = kwargs
-
-		def set_subtask(self, *args):
-			self.subtask = args
-
-class PrimativeTask(list):
-	def __init__(self, name):
-		self.name = name
-		self.preconditions = None
-		self.effects = None
-
-	def set_precondition(self, **kwargs):
-		self.preconditions = kwargs
-	
-	def set_effects(self, **kwargs):
-		self.effects = kwargs
-
 class DecompHistory(list):
 	def __init__(self):
 		self.history_list = []
@@ -68,18 +24,12 @@ class DecompHistory(list):
 
 class Planner(object):
 	def __init__(self, world, root_task):
-		self.world = world
-		self.pathplan = DepthFirstSearch(world, root_task)
-
-	def print_world(self):
-		for status in self.world.current_state.iteritems():
-			print status,	
+		self.pathplan = DepthFirstSearch(world, root_task)	
 
 	def process(self):
-		print '\ninitial status: ', 
-		self.print_world()
-		print '\n\ngenerating plan:'
+		print '\ngenerating plan:'
 		plans = self.pathplan.formulate()
+		print ''
 		if plans is None:
 			assert False, "no plan could be generated"
 		return plans
@@ -87,44 +37,55 @@ class Planner(object):
 class DepthFirstSearch(object):
 	def __init__(self, world, root_task):
 		self.plans = []
-		self.working_state = world
+		self.working_state = copy.deepcopy(world)
 		self.task_list = [root_task]
 		self.method_list = []
 		self.decomphistory = DecompHistory()
 
-	def condition_met(self, method):
-		for precondition in method.preconditions.iteritems():
-			if precondition not in self.working_state.current_state.iteritems():
+	def condition_met_method(self, methods):
+		method = methods()
+		for precondition in method.preconditions():
+			if precondition not in self.working_state.iteritems():
+				return False
+		return True
+
+	def condition_met(self, task):
+		for precondition in task.preconditions():
+			if precondition not in self.working_state.iteritems():
 				return False
 		return True
 
 	def print_method(self, method_list):
-		for method in method_list:
-			print str(method.name) + ' subtask: ',
-			for task in method.subtask:
-				print str(task.name),
+		for Method in method_list:
+			method = Method()
+			print str(method.__class__.__name__) + ' subtask: ',
+			for Task in method.subtask():
+				task = Task()
+				print str(task.__class__.__name__),
 			print ''
 
 	def find_method(self, task):
 		method_list = []
 		for method in task.method_list:
-			if self.condition_met(method):
+			if self.condition_met_method(method):
 				method_list.append(method)
 		return method_list
 
 	def formulate(self):
 		while self.task_list:
-			current_task = self.task_list.pop(0)
-			if str(current_task.__class__.__name__) == 'CompoundTask':
-				print '\ncompound: ' + str(current_task.name)
+			Task = self.task_list.pop(0)
+			current_task = Task()
+			if current_task.task_type == 'Compound':
+				print '\ncompound: ' + str(current_task.__class__.__name__)
 				self.method_list = self.find_method(current_task)
 				self.print_method(self.method_list)
 				
 				if self.method_list:
 					print '**decomposing task**'
-					m = self.method_list.pop(0)
+					Method = self.method_list.pop(0)
+					m = Method()
 					history = self.decomphistory.RecordHistory(current_task, self.method_list, self.task_list, self.working_state, self.plans)
-					self.task_list[0:0] = m.subtask #extend and insert in beginning of list
+					self.task_list[0:0] = m.subtask() #extend and insert in beginning of list
 					self.decomphistory.history_list.append(history)
 
 				else:
@@ -138,11 +99,11 @@ class DepthFirstSearch(object):
 					else:
 						return None
 				
-			elif str(current_task.__class__.__name__) == 'PrimativeTask':
-				print '\nprimative: ' + str(current_task.name)
+			elif current_task.task_type == 'Primative':
+				print '\nprimative: ' + str(current_task.__class__.__name__)
 				if self.condition_met(current_task):
 					print '**add task to plans**'
-					self.working_state.current_state.update(current_task.effects)
+					self.working_state.update(current_task.effects())
 					self.plans.append(current_task)
 				
 				else:
@@ -156,3 +117,6 @@ class DepthFirstSearch(object):
 				assert False, 'Unknown Task Type'
 
 		return self.plans
+
+if __name__ == '__main__':
+	print 'ok'
