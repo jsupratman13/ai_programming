@@ -21,10 +21,6 @@ class AcceliteStrategy(object):
 		def subtask(self):
 			return [ptask.LandmarkToLocalize, ptask.SearchBall]
 
-class Hello:
-	def __init__(self):
-		self.task_type = 'compound'
-
 if __name__ == '__main__':
 	soccer = ccl.SoccerStrategy()
 	root = AcceliteStrategy()

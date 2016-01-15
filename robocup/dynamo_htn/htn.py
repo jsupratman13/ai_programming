@@ -76,12 +76,12 @@ class DepthFirstSearch(object):
 			Task = self.task_list.pop(0)
 			current_task = Task()
 			if current_task.task_type == 'Compound':
-				print '\ncompound: ' + str(current_task.__class__.__name__)
+#				print '\ncompound: ' + str(current_task.__class__.__name__)
 				self.method_list = self.find_method(current_task)
-				self.print_method(self.method_list)
+#				self.print_method(self.method_list)
 				
 				if self.method_list:
-					print '**decomposing task**'
+#					print '**decomposing task**'
 					Method = self.method_list.pop(0)
 					m = Method()
 					history = self.decomphistory.RecordHistory(current_task, self.method_list, self.task_list, self.working_state, self.plans)
@@ -89,7 +89,7 @@ class DepthFirstSearch(object):
 					self.decomphistory.history_list.append(history)
 
 				else:
-					print '**no available method, returning to last decomposed task**'
+#					print '**no available method, returning to last decomposed task**'
 					history_list = self.decomphistory.RestoreHistory()
 					if history_list:
 						history = history_list.pop()
@@ -100,14 +100,14 @@ class DepthFirstSearch(object):
 						return None
 				
 			elif current_task.task_type == 'Primative':
-				print '\nprimative: ' + str(current_task.__class__.__name__)
+#				print '\nprimative: ' + str(current_task.__class__.__name__)
 				if self.condition_met(current_task):
-					print '**add task to plans**'
+#					print '**add task to plans**'
 					self.working_state.update(current_task.effects())
 					self.plans.append(current_task)
 				
 				else:
-					print '**condition not met, reset plans and returning to last decomposed task**'
+#					print '**condition not met, reset plans and returning to last decomposed task**'
 					history_list= self.decomphistory.RestoreHistory()
 					history = history_list.pop()
 					self.task_list = history.last_recorded_task_list
