@@ -33,7 +33,48 @@ class Task(object):
 				return Task.ACTIVE
 		else:
 			return Task.COMPLETE
-			
+		
+class TaskEnaction(object):
+	def __init__(self):
+		pass
+
+	def _execute(self, world_state, root_task):
+		self._state = world_state
+		self._planner = Planner(self._state.world_status, root_task)
+		
+		plans = self._planner.process()
+
+		print "*-----------------------*"
+		for task in plans: print str(task.__class__.__name__)
+		print "*-----------------------*"
+		print ''
+		print 'operating task right now'
+		for task in plans:
+			print 'executing: %s' % str(task.__class__.__name__)
+			try:
+				process_task = task.operators()
+				status = task.status(self._state.world_status)
+				while status == Task.ACTIVE:
+					try:
+						process_task.next()
+						self._state._update()
+						status = task.status(self._state.world_status)
+					except StopIteration:
+						status = Task.FAILED
+				else:
+					if status == Task.FAILED:
+						print ''
+						print 'replanning'
+						print ''
+						break
+			finally:
+				pass
+		else:
+			print ''
+			print 'task successful'
+			print ''
+			return
+
 class WorldState(object):
 	def __init__(self):
 		self.it = time.time()
@@ -59,7 +100,8 @@ class WorldState(object):
 			self.world_status[state] = new_key
 
 	def print_state(self):
-		print 'current state: ',
+		print ''
+		print 'current state: '
 		for state,key in self.world_status.items():
 			print state, key
 		print ''
@@ -125,28 +167,11 @@ class WorldState(object):
 
 class SoccerStrategy(object):
 	def __init__(self):
-		self.state = WorldState()
+		self._state = WorldState()
+		self._task_enaction = TaskEnaction()
 
-	def run(self, root):
-		self.state._update()
-		self.state.print_state()
-
-		planner = Planner(self.state.world_status, root)
-		plans = planner.process()
-		for task in plans:
-			print str(task.__class__.__name__)
-
-		print 'operating task right now'
-		for task in plans:
-			process_task = task.operators()
-			status = task.status(self.state.world_status)
-			while status == Task.ACTIVE:
-				process_task.next()
-				self.state._update()
-				status = task.status(self.state.world_status)
-			else:
-				if status == Task.FAILED:
-					print 'replanning'
-					break
-		print 'finished'
+	def execute(self, root):
+		self._state._update()
+		self._state.print_state()
+		self._task_enaction._execute(self._state, root)
 

@@ -27,7 +27,7 @@ class Planner(object):
 		self.pathplan = DepthFirstSearch(world, root_task)	
 
 	def process(self):
-		print '\ngenerating plan:'
+		print '\ngenerating plan'
 		plans = self.pathplan.formulate()
 		print ''
 		if plans is None:

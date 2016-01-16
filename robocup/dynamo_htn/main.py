@@ -22,8 +22,15 @@ class AcceliteStrategy(object):
 			return [ptask.LandmarkToLocalize, ptask.SearchBall]
 
 if __name__ == '__main__':
+	root = AcceliteStrategy
 	soccer = ccl.SoccerStrategy()
-	root = AcceliteStrategy()
 
-	soccer.run(AcceliteStrategy)
+	try:
+		soccer.execute(root)
+
+	except Exception, e:
+		print 'Exception: '+str(e)
+
+	except (KeyboardInterrupt, SystemExit):
+		print 'system exit occur'
 	
