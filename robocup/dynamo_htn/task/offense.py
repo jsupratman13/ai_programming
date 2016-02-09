@@ -230,7 +230,7 @@ class KickBall(Task):
 
 	def operators(self, agent):
 		while True:
-			print 'low shot!'
+			print 'low kick!'
 #			agent.effector.play_sound("sound/shoot.wav")
 			agent.effector.cancel()
 			agent.brain.wait_until_status_updated()
@@ -260,8 +260,22 @@ class HighKickBall(Task):
 
 	def operators(self, agent):
 		while True:
-			time.sleep(1)
-			print 'high kicking ball!'
+			print 'high kick!'
+#			agent.effector.play_sound("sound/shoot.wav")
+			agent.effector.cancel()
+			agent.brain.wait_until_status_updated()
+			agent.brain.sleep(self.kick_wait)
+
+			ballarr_lc = agent.brain.get_estimated_object_pos_lc(agent.brain.BALL, agent.brain.AF_ANY)
+			if ballarr_lc:
+				if tools.motionfuncagent.in_kickarea(self.kick_conf, ballarr_lc[0]):
+					if ballarr_lc[0][1] > (self.kick_conf.kick_left_close + self.kick_conf.kick_right_close) / 2:
+						agent.effector.play_motion(33)
+					else:
+						agent.effector.play_motion(32)
+
+					agent.effector.cancel()
+					agent.brain.wait_until_motion_finished()			
 			yield
 
 	def preconditions(self):
