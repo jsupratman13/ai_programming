@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-import sys, math, time
+import sys, math, time,copy
 
 #collision between drawn points and image
 def detect_collision(bullet, enemy):
@@ -23,13 +23,18 @@ class Player:
 		#initial player start
 		self.rect.bottom = screen.bottom
 		self.rect.centerx = screen.centerx
-
+		
+		#hit point
 		self.shot_interval = time.time()
 		self.shots = []
 		self.max_shots = 2
 		self.is_alive = True
+
+		#upgrades
 		self.MOVE_SPEED = 2
 		self.SHOT_SPEED = 1
+		self.LASER_SPEED = 1
+		self.WEAPON = 0
 
 	def key_handler(self, pressed_key):
 		if pressed_key[K_LEFT]:  self.rect.move_ip(-self.MOVE_SPEED,0);
@@ -37,10 +42,16 @@ class Player:
 		if pressed_key[K_UP]:    self.rect.move_ip(0,-self.MOVE_SPEED);
 		if pressed_key[K_DOWN]:  self.rect.move_ip(0,self.MOVE_SPEED);
 		if pressed_key[K_SPACE]:
-		#	if len(self.shots) < self.max_shots:
-			if time.time() - self.shot_interval > self.SHOT_SPEED:
-				self.shot_interval = time.time()
-				self.shots.append(Bullet(self.rect.centerx, self.rect.top, 'PLAYER'))
+			if self.WEAPON == 0:
+			#	if len(self.shots) < self.max_shots:
+				if time.time() - self.shot_interval > self.SHOT_SPEED:
+					self.shot_interval = time.time()
+					self.shots.append(Bullet(self.rect.centerx, self.rect.top, 'PLAYER'))
+			if self.WEAPON == 1:
+				if time.time() - self.shot_interval < self.LASER_SPEED:
+					self.shots.append(Laser(self.rect.centerx, self.rect.top, 'PLAYER'))
+				elif time.time() - self.shot_interval > self.LASER_SPEED*2:
+					self.shot_interval = time.time()
 
 	def update(self, screen):
 		for s in self.shots:
@@ -98,7 +109,7 @@ class Enemy:
 class Bullet:
 	def __init__(self, rx, ry, source):
 		self.x = rx
-		self.y = ry
+		self.y = ry+5
 		self.source = source
 		self.contact = False
 
@@ -112,16 +123,35 @@ class Bullet:
 		if not self.contact:
 			pygame.draw.circle(screen, (255,color,255),(self.x, self.y),5)
 
+class Laser:
+	def __init__(self, rx, ry, source):
+		self.x = rx
+		self.y = ry
+		self.source = source
+		self.contact = False
+	
+	def update(self,screen):
+		if self.source == 'ENEMY':
+			self.y +=5
+			color = 0
+		else:
+			color = 255
+			self.y -= 5
+		if not self.contact:
+			pygame.draw.circle(screen, (255,color,255), (self.x, self.y),5)
+			
 class Powerup:
 	def __init__(self, screen):
-		self.powerup = [Powerup.RapidPowerup(screen), Powerup.SpeedPowerup(screen)]
+		self.powerup = [Powerup.RapidPowerup(screen), \
+				Powerup.SpeedPowerup(screen), \
+				Powerup.LaserWeapon(screen)]
 
 	def update(self, player_list):
 		for p in self.powerup:
 			for player in player_list:
 				if detect_collision(p, player):
 					p.contact = True	
-				p.update(player)
+				p.update()
 
 	class RapidPowerup:
 		def __init__(self, screen):
@@ -135,14 +165,15 @@ class Powerup:
 			if not self.contact:
 				pygame.draw.circle(self.screen, (255,0,0),(self.x, self.y),10)
 			else:	
-				player.SHOT_SPEED = self.UPDATE
+				player.SHOT_SPEED = self.UPDATE		
+
 	class SpeedPowerup:
 		def __init__(self,screen):
 			self.screen = screen
 			self.contact = False
 			self.x = 650
 			self.y = 600
-			self.UPDATE = 7
+			self.UPDATE = 5
 	
 		def update(self, player):
 			if not self.contact:
@@ -150,6 +181,19 @@ class Powerup:
 			else:
 				player.MOVE_SPEED = self.UPDATE
 
+	class LaserWeapon:
+		def __init__(self,screen):
+			self.screen = screen
+			self.contact = False
+			self.x = 700
+			self.y = 700
+			self.UPDATE = 1
+
+		def update(self, player):
+			if not self.contact:
+				pygame.draw.circle(self.screen, (0,255,0),(self.x, self.y),10)
+			else:
+				player.WEAPON = self.UPDATE
 class Game:
 	def __init__(self):
 		(w,h) = (800,800)
