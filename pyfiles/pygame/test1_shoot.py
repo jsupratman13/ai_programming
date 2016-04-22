@@ -1,19 +1,49 @@
 import pygame
 from pygame.locals import *
-import sys, math
+import sys, math, time
+
+class Player:
+	def __init__(self, screen):
+		self.image = pygame.image.load("renge.png").convert_alpha()
+		self.rect = self.image.get_rect()
+		
+		#initial player start
+		self.rx = screen.centerx/2
+		self.ry = screen.centery/2
+
+		self.shot_interval = time.time()
+		self.shots = []
+		self.max_shots = 2
+
+	def key_handler(self, pressed_key):
+		if pressed_key[K_LEFT]:  self.rect.move_ip(-1,0);
+		if pressed_key[K_RIGHT]: self.rect.move_ip(1,0);
+		if pressed_key[K_UP]:    self.rect.move_ip(0,-1);
+		if pressed_key[K_DOWN]:  self.rect.move_ip(0,1);
+		if pressed_key[K_SPACE]:
+		#	if len(self.shots) < self.max_shots:
+			if time.time() - self.shot_interval > 1:
+				self.shot_interval = time.time()
+				self.shots.append(Bullet(self.rect.centerx, self.rect.top))
+
+	def update(self, screen):
+		for s in self.shots:
+			s.update(screen)
+
+	def show(self, screen):
+		screen.blit(self.image, self.rect)
 
 class Bullet:
-	def __init__(self,screen, rx, ry):
+	def __init__(self, rx, ry):
 		self.x = rx
 		self.y = ry
-		self.screen = screen
 	
-	def shoot(self):
+	def update(self,screen):
 		self.y -= 5
-		pygame.draw.circle(self.screen, (255,255,255),(self.x, self.y),5)
+		pygame.draw.circle(screen, (255,255,255),(self.x, self.y),5)
 
 def main():
-	(w,h) = (400,400)
+	(w,h) = (800,800)
 	rx = w/2
 	ry = h/2
 	flag = 0
@@ -22,23 +52,18 @@ def main():
 	pygame.init()
 	pygame.display.set_mode((w,h), 0, 32)
 	screen = pygame.display.get_surface()
-	im = pygame.image.load("renge.png").convert_alpha()
-	rect = im.get_rect()
-	rect.center = (rx,ry)
-
+	
+	player = Player(screen.get_rect())
 	while True:
 		pygame.display.update()
 		pygame.time.wait(30)
 		screen.fill((0,20,0,0))
-		screen.blit(im,rect)
 
 		#key
 		pressed_key = pygame.key.get_pressed()
-		if pressed_key[K_LEFT]:  rect.move_ip(-1,0); rx-=1
-		if pressed_key[K_RIGHT]: rect.move_ip(1,0);  rx+=1
-		if pressed_key[K_UP]:    rect.move_ip(0,-1); ry-=1
-		if pressed_key[K_DOWN]:  rect.move_ip(0,1);  ry+=1
-
+		player.key_handler(pressed_key)
+		player.update(screen)
+		player.show(screen)
 		#event
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -49,24 +74,12 @@ def main():
 				if event.key == K_ESCAPE:
 					pygame.quit()
 					sys.exit()
-				if event.key == K_SPACE:
-					bullet = Bullet(screen, rx, ry)
-					flag = 1
-					shotflag = 1
-		if flag:
-			bullet.shoot()
-"""		#shoot
-		if flag:
-			if shotflag:
-				x = rx
-				y = ry
-				shotflag = 0
-			else:
-				y -=5
+#				if event.key == K_SPACE:
+#					bullet = Bullet(screen, rx, ry)
+#					flag = 1
+#					shotflag = 1
+#		if flag:
+#			bullet.update()
 
-			#keep range
-			if y < 0: flag = 0
-			pygame.draw.circle(screen, (255,255,255), (x,y), 5)
-"""
 if __name__ == '__main__':
 	main()
