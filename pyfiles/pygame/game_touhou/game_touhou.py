@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 import sys, math, time,copy
-from players import Player, Enemy
+from players_fsm import Player, Enemy
 from powerup import Powerup
 
 class Game:
