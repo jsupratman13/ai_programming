@@ -10,6 +10,8 @@ class Player:
 		#initial player start
 		self.rx = screen.centerx/2
 		self.ry = screen.centery/2
+		self.rect.centery = screen.centery
+		self.rect.centerx = screen.centerx
 
 		self.shot_interval = time.time()
 		self.shots = []
