@@ -105,3 +105,6 @@ ps aux | grep [file name]
 (for window)
 tasklist /v
 
+--create new file--
+touch [filename]
+
