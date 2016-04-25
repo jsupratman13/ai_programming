@@ -166,7 +166,7 @@ class Enemy:
 		for player in self.player_list:
 			px = player.rect.centerx
 			for s in player.shots:
-				if danger_zone(s, self.rect, 80) and s.y< self.rect.centery:
+				if danger_zone(s, self.rect, 80) and s.y >  self.rect.centery:
 					self.transition = 'DODGE'
 			else:
 				if math.fabs(px - self.rect.centerx) < 30:
