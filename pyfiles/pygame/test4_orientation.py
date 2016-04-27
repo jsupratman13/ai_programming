@@ -6,7 +6,6 @@ def pos_to_theta(x,y):
 	th = math.atan2(y,x)
 	return int(math.degrees(th))
 
-
 #collision between drawn points and image
 def detect_collision(bullet, enemy):
 	ex, ey = enemy.rect.centerx, enemy.rect.centery
@@ -26,7 +25,7 @@ class Player:
 		self.rect = self.image.get_rect()
 		
 		#initial player start
-		self.rect.bottom = screen.bottom
+		self.rect.bottom = screen.centery
 		self.rect.centerx = screen.centerx
 		self.move_x = 0
 		self.move_y = 0
@@ -41,8 +40,9 @@ class Player:
 		x,y = mouse_pos
 		angle = pos_to_theta(self.rect.centery-y,self.rect.centerx-x)
 #		angle = -90
+		old_center = self.rect.center
 		self.image_rotate = pygame.transform.rotate(self.image, angle)
-		self.rect_rotate = self.image_rotate.get_rect()
+		self.rect_rotate = self.image_rotate.get_rect(center = old_center)
 
 		if pressed_key[K_LEFT]:  
 			self.move_x = -self.MOVE_SPEED*math.cos(math.radians(angle))
@@ -66,13 +66,13 @@ class Player:
 		#	if len(self.shots) < self.max_shots:
 			if time.time() - self.shot_interval > 1:
 				self.shot_interval = time.time()
-				self.shots.append(Bullet(self.rect, angle))
+				self.shots.append(Bullet(self.rect_rotate, angle))
 
 	def update(self, screen):
 		for s in self.shots:
 			s.update(screen)
 
-		screen.blit(self.image_rotate, self.rect)
+		screen.blit(self.image_rotate, self.rect_rotate)
 
 	def hit_target(self, enemy_list):
 		for s in self.shots:
