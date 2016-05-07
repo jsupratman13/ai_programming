@@ -108,3 +108,11 @@ tasklist /v
 --create new file--
 touch [filename]
 
+--splitscreen in byobu--
+[shift]+[F2] (horizontal split)
+[ctrl]+[F2] (vertical split)
+[shift]+[arrow keys] (switch screen)
+
+--full screen--
+[alt]+[space]
+[x]
