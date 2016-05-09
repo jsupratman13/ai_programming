@@ -76,7 +76,6 @@ cc [filename].c [filename2].c (...) -o executable
 g++ [filename].cpp [filename2].cpp (...) -o [filename3]
 
 
-
 --pip install--
 easy_install.pip
 
@@ -116,3 +115,9 @@ touch [filename]
 --full screen--
 [alt]+[space]
 [x]
+
+--cmake--
+cmake -G "MinGW Makefiles" (for MinGW compiler)
+mingw32-make
+
+
