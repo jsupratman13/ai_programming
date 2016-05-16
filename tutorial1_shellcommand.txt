@@ -120,4 +120,5 @@ touch [filename]
 cmake -G "MinGW Makefiles" (for MinGW compiler)
 mingw32-make
 
-
+--mount webDAV--
+sudo mount -t davfs [site] [mount location] -o uid=1000
