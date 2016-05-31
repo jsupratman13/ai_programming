@@ -12,7 +12,7 @@ if __name__ == '__main__':
 	initial_time = time.time()
 
 	world = WorldState('enemy_dead', 'tired', 'enemy_found', 'near_enemy', 'fear')
-	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=False)
+	world.set_initialstate(enemy_dead=False, enemy_found=True, tired=False, near_enemy=False, fear=True)
 
 	charge = PrimativeTask('Charge')
 	charge.set_precondition(enemy_found=True, near_enemy=False, fear=False)
@@ -63,9 +63,9 @@ if __name__ == '__main__':
 
 	planning = Planner(world, root)
 	plans = planning.process()
-	print '\nPlan: '
 	for plan in plans:
 		print plan.name
+	print 'mtr: ' + str(planning.mtr)
 
-	print 'total time: ' + str(time.time()-initial_time)
+	print '\ntotal time: ' + str(time.time()-initial_time)
 

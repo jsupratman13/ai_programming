@@ -97,7 +97,9 @@ class DepthFirstSearch(object):
 		self.mtr = 0
 
 	def find_mtr(self, task, pop_method):
-		print [x for x in task.method_list].index(pop_method)
+		for i,method in enumerate(task.method_list):
+			if pop_method.name == method.name:
+				return i
 
 	def condition_met(self, method):
 		for precondition in method.preconditions.iteritems():
@@ -130,6 +132,7 @@ class DepthFirstSearch(object):
 				if self.method_list:
 					print '**decomposing task**'
 					m = self.method_list.pop(0)
+					self.mtr += self.find_mtr(current_task, m)
 					history = self.decomphistory.RecordHistory(current_task, self.method_list, self.task_list, self.working_state, self.plans, self.mtr)
 					self.task_list[0:0] = m.subtask #extend and insert in beginning of list
 					self.decomphistory.history_list.append(history)
