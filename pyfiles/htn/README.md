@@ -8,37 +8,22 @@ Compose of Tasks which can be decomposed into smaller primative task.
 * comparing to goap, loses its ability to plan the unexpected
 
 ##Pseudocode
+'''
 working_word_state = current_world_state.copy()
-
 tasktoprocess.push(ROOTTASK)
-
 while tasktoprocess.not_empty:
-
 	CURRENTTASK = tasktoprocess.pop()
-	
 	if CURRENTTASK == compoundttask:
-	
 		satisfiedmethod = currenttask.findstaisfiedmethod(working_current_state)
-		
 		if statisfiedmethod:
-			
 			recorddecomposetask(currenttask, final plan, decomphistory)
-			
 			taskproceess.push(satsifeidmethod.subtask)
-		
 		else:
-			
 			restoretolastdecomptask
-	
 	elif CURRENTTASK == primitive task:
-		
 		if conditionmet(currenttask):
-			
 			apply_update_to_worldstate
-			
 			FinalPlan.push(currenttask)
-		
-		else:
-			
+		else:	
 			retoretolastdecomptask
-
+'''
