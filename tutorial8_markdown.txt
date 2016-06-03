@@ -34,11 +34,11 @@ __this text is bold__
 >block quotes
 
 --inline code--
-'input code'
+`input code`
 
-'''language
+```language
 if long code
-'''
+```
 
 --task list(github only)--
 - [x] complete item
