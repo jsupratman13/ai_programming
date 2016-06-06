@@ -1,6 +1,6 @@
 import csp
 import task.root
-import time
+import time,sys
 import rcl
 from tools.decorator import classproperty
 
@@ -31,16 +31,16 @@ if __name__ == '__main__':
 	soccer = csp.SoccerStrategy(agent)	
 
 	try:
-		agent.brain.set_selfpos((0,0,0))
+		agent.brain.set_selfpos((1000,0,0))
 		soccer.execute(root)
 
 #	except Exception, e:
 #		agent.brain.debug_log_ln('Exception: '+str(e))
+#		time.sleep(1)
 #		agent.effector.cancel()
-#		agent.effector.terminate()
+#		agent.terminate()
+#		time.sleep(1)
 
 	except (KeyboardInterrupt, SystemExit):
-		print 'system exit occured'
-		agent.effector.terminate()
-		raise
+		agent.terminate()
 	

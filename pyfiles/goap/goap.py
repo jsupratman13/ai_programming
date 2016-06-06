@@ -1,3 +1,10 @@
+################################
+# @file goap.py                #
+# @brief GOAP core             #
+# @author Joshua Supratman     #
+# @date 2016/01/07             #
+################################
+
 import copy, itertools
 
 class WorldState(object):
@@ -33,14 +40,10 @@ class Action(object):
 		self.effects = kwargs
 
 class Planner(object):
-	def __init__(self, world, actionlist, planstyle='astar'):
+	def __init__(self, world, actionlist):
 		self.world = world
 		self.actionlist = actionlist
-		self.check()
-		if planstyle == 'dfs':
-			assert False, "DepthFirstSearch not created yet"
-		else:
-			self.pathplan = AstarSearch(self.world, self.actionlist)
+		self.pathplan = AstarSearch(self.world, self.actionlist)
 		
 	def check(self):
 		for action in self.actionlist:

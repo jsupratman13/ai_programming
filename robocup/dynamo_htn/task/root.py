@@ -1,13 +1,20 @@
 import csp
 import offense as ptask
 import compound as ctask
-import defense
+import initialize
 import time
 
 class Root(object):
 	def __init__(self):
 		self.task_type = 'Compound'
 		self.method_list = [Root.NormalStrategy, Root.Localize]
+
+	class Idling:
+		def preconditions(self):
+			pass
+
+		def subtask(self):
+			return [initialize.Idling]
 	
 	class NormalStrategy:
 		def preconditions(self):
@@ -21,7 +28,7 @@ class Root(object):
 			return [(csp.WorldState.K_KNOW_SELF_POS, False)]
 
 		def subtask(self):
-			return [defense.LandmarkToLocalize, defense.SearchBall]
+			return [initialize.LandmarkToLocalize]
 
 if __name__ == '__main__':
 	print 'ok'

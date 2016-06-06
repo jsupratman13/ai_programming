@@ -58,7 +58,7 @@ class ApproachDoor(Task):
 
 	def run(self):
 		if self._status.step > 0:
-			print 'appraoch door'
+			print str(self._status.step) +' m away from door'
 			self._status.step -= 1
 			return True
 		return False
@@ -102,3 +102,5 @@ if __name__ == '__main__':
 	#run root until value is true
 	while not root.run():
 		print("-----------")
+
+	print 'finished action'

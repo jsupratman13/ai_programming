@@ -1,5 +1,5 @@
 ######################################
-# @file csp.py 						 #
+# @file csp.py 		       	     #
 # @brief central strategy processor  #
 ######################################
 
@@ -8,7 +8,7 @@ import time,copy
 from htn import Planner
 import tools.geometry, tools.motionfuncagent
 import math
-from rcl import StandardMoveConfig
+from rcl import StandardMoveConfig,FallError,GameStateChanged,ActionCancelSignal
 
 class Task(object):
 	__metaclass__ = abc.ABCMeta	
@@ -54,13 +54,11 @@ class TaskEnaction(object):
 		
 		plans = self._planner.process()
 
-		print "*-----------------------*"
-		for task in plans: print str(task.__class__.__name__)
-		print "*-----------------------*"
-		print ''
-		print 'operating task right now'
+		agent.brain.debug_log_ln("*-----------------------*")
+		for task in plans: agent.brain.debug_log_ln(str(task.__class__.__name__))
+		agent.brain.debug_log_ln("*-----------------------*")
 		for task in plans:
-			print 'executing: %s' % str(task.__class__.__name__)
+			agent.brain.debug_log_ln('executing: %s' % str(task.__class__.__name__))
 			try:
 				process_task = task.operators(agent)
 				status = task.status(self._state.world_status)
@@ -74,16 +72,16 @@ class TaskEnaction(object):
 						status = Task.FAILED
 				else:
 					if status == Task.FAILED:
-						print ''
-						print 'replanning'
-						print ''
+						agent.brain.debug_log_ln('replanning')
 						break
+			except ActionCancelSignal, e:
+				agent.brain.debug_log_ln(str(e))
+				break
+
 			finally:
 				pass
 		else:
-			print ''
-			print 'task successful'
-			print ''
+			agent.brain.debug_log_ln('task successful')
 			return
 
 class WorldState(object):
@@ -102,6 +100,8 @@ class WorldState(object):
 			WorldState.K_BALL_IN_KICK_AREA : self._ball_in_kick_area,
 			WorldState.K_BALL_IN_GOAL_AREA : self._ball_in_goal_area,
 			WorldState.K_BALL_IN_TARGET : self._ball_in_target,
+			WorldState.K_KEEPER_MOTION: self._keeper_motion,
+			WorldState.K_KEEPER_CLEARABLE_AREA: self._keeper_clearable_area,
 			WorldState.K_IDLE : self._idle,
 		}
 		self.world_status = {key: False for key, state in self._world_rep.items()}
@@ -174,9 +174,25 @@ class WorldState(object):
 		return tools.motionfuncagent.in_kickarea(self._move_conf.kick_area, ballarr_lc[0])
 
 	def _ball_in_goal_area(self):
+		ballarr_gl = self.agent.brain.get_estimated_object_pos_gl(self.agent.brain.BALL, self.agent.brain.AF_ANY)
+		if ballarr_gl:
+			distance = tools.geometry.distance2points((5000,0,0), ballarr_gl[0])
+			if distance < 700:
+				return True
 		return False
 
 	def _ball_in_target(self):
+		return False
+
+	def _keeper_motion(self):
+		return False
+
+	def _keeper_clearable_area(self):
+		ballarr_gl = self.agent.brain.get_estimated_object_pos_gl(self.agent.brain.BALL, self.agent.brain.AF_ANY)
+		if ballarr_gl:
+			x, y, th = ballarr_gl[0]
+			if -3900 > x:
+				return True
 		return False
 
 	def _idle(self):
@@ -193,6 +209,7 @@ class WorldState(object):
 	K_BALL_IN_KICK_AREA = "K_BALL_IN_KICK_AREA"
 	K_IDLE = "K_IDLE"
 	K_BALL_IN_GOAL_AREA = "K_BALL_IN_GOAL_AREA"
+	K_KEEPER_MOTION = "K_KEEPER_MOTION"
 	K_BALL_IN_TARGET = "K_BALL_IN_TARGET"
 
 class SoccerStrategy(object):
@@ -208,17 +225,31 @@ class SoccerStrategy(object):
 		self.agent.brain.enable_auto_wakeup(1)
 		self.agent.effector.set_pan_deg(0)
 
-		self.agent.brain.debug_log_ln('Execute Accelite Strategy')
+		arg = self.agent.get_arg()
+		if arg == 'GC' or arg =='WAIT_START_SIGNAL':
+			self.agent.brain.set_use_gamecontroller(True)
+			self.agent.brain.set_send_common_info(True)
+			arg = 'GAME CONTROLLER'
+		elif arg == '' or arg == 'START' or arg == 'RESTART':
+			arg = 'AUTO'
+			pass
+		else:
+			assert False, 'unknown args: ' + arg
+
+		self.agent.brain.debug_log_ln('Execute Accelite Strategy '+arg)
 		while True:
-#			try:
-				self._state.print_state()
+			try:
+#				self._state.print_state()
 				self._task_enaction._execute(self.agent, self._state, root)
 
-#			except FallError, e:
-#				self.agent.brain.debug_log_ln(str(e))
-#				self.agent.effector.cancel()
-#				time.sleep(3)
-#				self.agent.brain.wait_until_robot_standup()
-#				self.agent.brain.wait_until_motion_finished()
-#				time.sleep(1)
+			except GameStateChanged, changenotify:
+				self.agent.brain.debug_log_ln(str(changenotify))
+
+			except FallError, e:
+				self.agent.brain.debug_log_ln(str(e))
+				self.agent.effector.cancel()
+				time.sleep(3)
+				self.agent.brain.wait_until_robot_standup()
+				self.agent.brain.wait_until_motion_finished()
+				time.sleep(1)
 

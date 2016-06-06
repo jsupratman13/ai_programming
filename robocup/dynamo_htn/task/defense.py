@@ -1,34 +1,5 @@
 from csp import WorldState, Task
-
-class Idling(Task):
-	def __init__(self):
-		self.task_type = 'Primative'
-
-	def operators(self):
-		pass
-
-	def preconditions(self):
-		return []
-
-	def effects(self):
-		return []
-
-class LandmarkToLocalize(Task):
-	def __init__(self):
-		self.task_type = 'Primative'
-
-	def operators(self):
-		while True:
-			time.sleep(1)
-			print 'localize!'
-			yield
-
-	def preconditions(self):
-#		return [(WorldState.K_KNOW_SELF_POS, False)]
-		return []
-
-	def effects(self):
-	        return [(WorldState.K_KNOW_SELF_POS, True)]
+import math
 
 class TrackBall(Task):
 	def __init__(self):
