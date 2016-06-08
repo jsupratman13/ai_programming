@@ -135,7 +135,7 @@ int main() {
 	while (!root->run())  // If the operation starting from the root fails, keep trying until it succeeds.
 		std::cout << "--------------------" << std::endl;
 	std::cout << std::endl << "Operation complete.  Behaviour tree exited." << std::endl;
-	std::cin.get();
+//	std::cin.get();
 }
 
 
