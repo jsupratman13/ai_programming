@@ -2,6 +2,15 @@
 
 Hierarchical Task Network Planner (HTN Planner) is a non reactive-type agent architecture planner.
 Compose of Tasks which can be decomposed into smaller primative task.
+
+##Pros
+* Easy to manage
+* Easy to maintain
+* Designer have control
+
+##Cons
+* Loss of uniquness
+
 ##Comparing to GOAP:
 * goap can only plan primative while HTN can plan from abstract to primative
 * doesnt use goals so therefore moves forward in planning
