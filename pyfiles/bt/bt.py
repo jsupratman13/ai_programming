@@ -9,7 +9,7 @@ class WorldStatus(object):
 		self.open_door = False  #door status
 		self.step = 3		#distance from door
 
-class Task(object):
+class Node(object):
 	def __init__(self):
 		self._children = []
 	
@@ -19,7 +19,7 @@ class Task(object):
 	def add_child(self, c):
 		self._children.append(c)
 
-class Selector(Task):
+class Selector(Node):
 	def __init__(self):
 		super(Selector, self).__init__()
 
@@ -29,7 +29,7 @@ class Selector(Task):
 				return True
 		return False
 
-class Sequence(Task):
+class Sequence(Node):
 	def __init__(self):
 		super(Sequence, self).__init__()
 
@@ -39,7 +39,7 @@ class Sequence(Task):
 				return False
 		return True
 
-class IsDoorOpen(Task):
+class IsDoorOpen(Node):
 	def __init__(self, status):
 		super(IsDoorOpen, self).__init__()
 		self._status = status
@@ -51,7 +51,7 @@ class IsDoorOpen(Task):
 			print 'door is close'
 		return self._status.open_door
 
-class ApproachDoor(Task):
+class ApproachDoor(Node):
 	def __init__(self, status):
 		super(ApproachDoor, self).__init__()
 		self._status = status
@@ -63,7 +63,7 @@ class ApproachDoor(Task):
 			return True
 		return False
 
-class OpenDoor(Task):
+class OpenDoor(Node):
 	def __init__(self, status):
 		super(OpenDoor, self).__init__()
 		self._status = status
