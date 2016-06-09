@@ -1,7 +1,7 @@
 #astar with dijkstra and heuristic
 import grid
 import math
-from Queue() import PriorityQueue
+from Queue import PriorityQueue
 
 def heuristic(a,b):
 	return math.fabs(a.x-b.x)+math.abs(a.y-b.y)
