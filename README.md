@@ -8,6 +8,6 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
 * Hierarchial Task Network Planner (HTN Planner)
 
 ##Planned
-[ ] Rule Based
-[ ] Hierarchal Finite State Machine (HFSM)
-[ ] Utility System
+- [ ] Rule Based
+- [ ] Hierarchal Finite State Machine (HFSM)
+- [ ] Utility System
