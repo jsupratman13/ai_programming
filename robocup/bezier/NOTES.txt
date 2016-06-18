@@ -1,5 +1,0 @@
-Notes on bezier (bez-ee-ay)
-
-linear interpolation
-
-three points, third point is a control for curve
