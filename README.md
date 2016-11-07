@@ -6,6 +6,8 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
 * Behavior Tree (BT)
 * Goal Oriented Action Planning (GOAP)
 * Hierarchial Task Network Planner (HTN Planner)
+* Monte Carlo Localization (Histogram Filter)
+* Particle Filter
 
 ##Planned
 - [ ] Rule Based
