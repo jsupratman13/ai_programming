@@ -2,7 +2,6 @@ import pygame
 import sys
 from random import randint
 
-
 class Grid(object):
 	def __init__(self):
 		self.BLACK = (0,0,0)
@@ -164,7 +163,8 @@ if __name__ == '__main__':
 	pygame.display.set_caption("wandering renge")
 	clock = pygame.time.Clock()
 
-	im = pygame.image.load('renge.png').convert_alpha()
+#	im = pygame.image.load('renge.png').convert_alpha()
+	im = pygame.image.load('kirby.png').convert_alpha()
 	rect = im.get_rect()
 	init_x = randint(0,len(grid_map[0])-1)
 	init_y = randint(0,len(grid_map)-1)

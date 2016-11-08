@@ -180,7 +180,8 @@ if __name__ == '__main__':
 	update_flag = None
 
 	#initialize images and place image at random location
-	im = pygame.image.load('renge.png').convert_alpha()
+#	im = pygame.image.load('renge.png').convert_alpha()
+	im = pygame.image.load('kirby.png').convert_alpha()
 	rect = im.get_rect()
 	init_x = random.randint(0,WIDTH/2)
 	init_y = random.randint(0,HEIGHT)
