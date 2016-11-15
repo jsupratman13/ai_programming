@@ -76,7 +76,7 @@ class Grid(object):
 		self.WINDOW_SIZE = [len(grid_map[0])*(WIDTH+MARGIN)+MARGIN, len(grid_map)*(HEIGHT+MARGIN)+MARGIN]
 		return self.WINDOW_SIZE
 
-class MonteCarlo(object):
+class HistogramFilter(object):
 	def __init__(self, world):
 		self.p_move = 1
 		self.p_sensor = 0.7
@@ -163,8 +163,7 @@ if __name__ == '__main__':
 	pygame.display.set_caption("wandering renge")
 	clock = pygame.time.Clock()
 
-#	im = pygame.image.load('renge.png').convert_alpha()
-	im = pygame.image.load('kirby.png').convert_alpha()
+	im = pygame.image.load('renge.png').convert_alpha()
 	rect = im.get_rect()
 	init_x = randint(0,len(grid_map[0])-1)
 	init_y = randint(0,len(grid_map)-1)
@@ -172,7 +171,7 @@ if __name__ == '__main__':
 
 	update_flag = False
 	motion = [0,0]
-	renge = MonteCarlo(grid_map)
+	renge = HistogramFilter(grid_map)
 	renge.show()
 	while True:
 		pygame.display.update()
