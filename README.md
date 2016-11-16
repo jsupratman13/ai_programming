@@ -8,9 +8,10 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
 * Hierarchial Task Network Planner (HTN Planner)
 * Monte Carlo Localization (Histogram Filter)
 * Particle Filter
+* Search
 
 ##Planned
 - [ ] Rule Based
 - [ ] Hierarchal Finite State Machine (HFSM)
 - [ ] Utility System
-- [ ] Pathplan
+- [x] Pathplan
