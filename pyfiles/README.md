@@ -1,26 +1,33 @@
+#Content
+* Folder contains specific type of AI
+* pygame folder contains graphical example
+
 #AI Summary
 Game AI are generally split into two types of AI:
 * Reaction Type
 * Deliberation Type
 
-##Reaction AI
-Reaction type are AI that change its states in response to its environment.
+##Reactive AI
+Reactive type are AI that change its states in response to its environment.
 
-###Example of reaction type AI
+###Types
 * FSM
 * HFSM
 * Behavior Tree
 
-###Application to reaction AI
-* Fighting Games
+###Applications
+Situation where robot or AI requires to respond to its environment.
+* AI in fighting games (one on one fight)
+* Robot respond and adapt to its surrounding
 
-##Deliberation AI
-Deliberation type are AI that plan its states in accordance to its environment.
+##Non-reactive AI
+Non-reactive type are AI that plan its states in accordance to its environment.
 
-###Example of deliberation AI
+###Types
 * GOAP
 * HTN Planner
 
-###Application to deliberation AI
-* Strategy Game
+###Applications
+* AI in strategy game (board game or advance NPC)
+* Robot given freedom to accomplish its task
 
