@@ -143,12 +143,31 @@ class Search(object):
 		#show value
 		self.value = [[999 for row in range(len(self.grid[0]))]for col in range(len(self.grid))]
 
-	def set_heuristic(self):
-		#use euclidean distance
-		self.heuristic = [[1000 for row in range(len(self.grid[0]))] for col in range(len(self.grid))]
+	def manhattan_distance(self):
+		#left right up down is 1, diagonal is 2
+		self.heuristic = [[1000 for row in range(len(self.grid[0]))]for col in range(len(self.grid))]
 		for col in range(len(self.grid[0])):
 			for row in range(len(self.grid)):
 				self.heuristic[row][col] = abs(self.goal[0]-row) + abs(self.goal[1]-col)
+
+	def chebyshev_distance(self):
+		#all adjacent point is 1
+		self.heuristic = [[1000 for row in range(len(self.grid[0]))]for col in range(len(self.grid))]
+		for col in range(len(self.grid[0])):
+			for row in range(len(self.grid)):
+				self.heuristic[row][col] = max(abs(self.goal[0]-row), abs(self.goal[1]-col))
+
+	def eucledian_distance(self):
+		#distance between two points
+		self.heuristic = [[1000 for row in range(len(self.grid[0]))]for col in range(len(self.grid))]
+		for col in range(len(self.grid[0])):
+			for row in range(len(self.grid)):
+				self.heuristic[row][col] = (((self.goal[0]-row)**2)+((self.goal[1]-col)**2))**0.5
+
+	def set_heuristic(self):
+		self.manhattan_distance()	
+		#self.chebyshev_distance()
+		#self.eucledian_distance()
 
 	def get_path(self, action=None):
 		if action:
