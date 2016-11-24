@@ -111,7 +111,7 @@ class Search(object):
 		self.L_GREEN = world.L_GREEN
 		
 		#cost
-		self.cost = {self.WHITE:1, self.GREEN:5}
+		self.cost = {self.WHITE:1, self.GREEN:7}
 
 		#movement
 		self.motions = [[-1,0],#up
@@ -200,17 +200,16 @@ class Search(object):
 							self.value[x][y] = 0
 							self.path[x][y] = '*'
 							update = True
-					elif self.grid[x][y] == self.WHITE:
+					elif self.grid[x][y] != self.BLACK:
 						for i in range(len(self.motions)):
 							x2 = x + self.motions[i][0]
 							y2 = y + self.motions[i][1]
 							if x2 >= 0 and x2 < len(self.grid) and y2 >= 0 and y2 < len(self.grid[0]):
-								if self.grid[x][y] != self.BLACK:
-									value = self.value[x2][y2] + 1
-									if value < self.value[x][y]:
-										self.value[x][y] = value
-										self.path[x][y] = self.motion_name[i]
-										update = True
+								value = self.value[x2][y2] + 1
+								if value < self.value[x][y]:
+									self.value[x][y] = value
+									self.path[x][y] = self.motion_name[i]
+									update = True
 		return self.path
 
 	def breadthfirst(self):
