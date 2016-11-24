@@ -6,6 +6,7 @@ class Grid(object):
 	def __init__(self):
 		self.BLACK = (0,0,0)
 		self.WHITE = (255,255,255)
+		self.L_GREEN = (51,255,153)
 		self.GREEN = (0,255,0)
 		self.RED = (255,0,0)
 		self.BLUE = (0,255,255)
@@ -106,7 +107,12 @@ class Search(object):
 		self.BLACK = world.BLACK
 		self.BLUE = world.BLUE
 		self.WHITE = world.WHITE
+		self.GREEN = world.GREEN
+		self.L_GREEN = world.L_GREEN
 		
+		#cost
+		self.cost = {self.WHITE:1, self.GREEN:5}
+
 		#movement
 		self.motions = [[-1,0],#up
 						[0,-1],#left
@@ -219,7 +225,7 @@ class Search(object):
 			if x == self.goal[0] and y == self.goal[1]:
 				return self.expand
 			else:
-				self.expand[x][y] = self.BLUE
+				self.expand[x][y] = self.L_GREEN if self.expand[x][y] == self.GREEN else self.BLUE
 				self.world.grid_animation(self.expand)
 				for i in range(len(self.motions)):
 					x2 = x + self.motions[i][0]
@@ -244,7 +250,7 @@ class Search(object):
 			if x == self.goal[0] and y == self.goal[1]:
 				return self.expand
 			else:
-				self.expand[x][y] = self.BLUE
+				self.expand[x][y] = self.L_GREEN if self.expand[x][y] == self.GREEN else self.BLUE
 				self.world.grid_animation(self.expand)
 				for i in range(len(self.motions)):
 					x2 = x + self.motions[i][0]
@@ -278,14 +284,14 @@ class Search(object):
 #					print c
 				return self.expand
 			else:
-				self.expand[x][y] = self.BLUE
+				self.expand[x][y] = self.L_GREEN if self.expand[x][y] == self.GREEN else self.BLUE
 				self.world.grid_animation(self.expand)
 				for i in range(len(self.motions)):
 					x2 = x + self.motions[i][0]
 					y2 = y + self.motions[i][1]
 					if x2 >= 0 and x2 < len(self.expand) and y2 >= 0 and y2 < len(self.expand[0]):
 						if self.closed[x2][y2] == 0 and self.expand[x2][y2] != self.BLACK:
-							g += 1
+							g = g + self.cost[self.expand[x2][y2]]
 							open_list.append([g,x2,y2])
 							self.closed[x2][y2] = 1
 							self.action[x2][y2] = i
@@ -293,6 +299,7 @@ class Search(object):
 		return None
 
 	def greedy(self):
+		self.set_heuristic()
 		x = self.x
 		y = self.y
 		h = self.heuristic[x][y]
@@ -308,7 +315,7 @@ class Search(object):
 #				print node
 				return self.expand
 			else:
-				self.expand[x][y] = self.BLUE
+				self.expand[x][y] = self.L_GREEN if self.expand[x][y] == self.GREEN else self.BLUE
 				self.world.grid_animation(self.expand)
 				for i in range(len(self.motions)):
 					x2 = x + self.motions[i][0]
@@ -323,6 +330,7 @@ class Search(object):
 		return None
 
 	def astar(self):
+		self.set_heuristic()
 		g = self.g
 		x = self.x
 		y = self.y
@@ -340,7 +348,7 @@ class Search(object):
 #				print node
 				return self.expand
 			else:
-				self.expand[x][y] = self.BLUE
+				self.expand[x][y] = self.L_GREEN if self.expand[x][y] == self.GREEN else self.BLUE
 				self.world.grid_animation(self.expand)
 				for i in range(len(self.motions)):
 					x2 = x + self.motions[i][0]
@@ -348,7 +356,7 @@ class Search(object):
 					if x2 >= 0 and x2 < len(self.expand) and y2 >= 0 and y2 < len(self.expand[0]):
 						if self.closed[x2][y2] == 0 and self.expand[x2][y2] != self.BLACK:
 							f = g + self.heuristic[x2][y2]
-							g += 1
+							g = g + self.cost[self.expand[x2][y2]]
 							open_list.append([f,x2,y2,g])
 							self.closed[x2][y2] = 1
 							self.action[x2][y2] = i
@@ -358,9 +366,9 @@ class Search(object):
 if __name__ == '__main__':
 	grid = Grid()
 
-	YELLOW = grid.YELLOW
 	BLACK = grid.BLACK
 	WHITE = grid.WHITE
+	GREEN = grid.GREEN
 	WIDTH = grid.WIDTH
 	HEIGHT = grid.HEIGHT
 	MARGIN = grid.MARGIN
@@ -399,7 +407,8 @@ if __name__ == '__main__':
 
 		#change grid
 		mouse_pressed = pygame.mouse.get_pressed()
-		if mouse_pressed[0]:
+#		if mouse_pressed[0]:
+		if mouse_pressed[0] or mouse_pressed[2]:
 			expand = None
 			policy = False
 			x,y = pygame.mouse.get_pos()
@@ -415,10 +424,17 @@ if __name__ == '__main__':
 					rect2.center = (x,y)
 					obs_flag = WHITE
 				else:
-					if grid.grid_map[row][column] == BLACK and not obs_flag:
-						obs_flag = WHITE
-					elif grid.grid_map[row][column] == WHITE and not obs_flag:
-						obs_flag = BLACK
+					if mouse_pressed[0]:
+						if grid.grid_map[row][column] == BLACK and not obs_flag:
+							obs_flag = WHITE
+						elif grid.grid_map[row][column] == WHITE and not obs_flag:
+							obs_flag = BLACK
+					elif mouse_pressed[2]:
+						if grid.grid_map[row][column] == WHITE and not obs_flag:
+							obs_flag = GREEN
+						elif grid.grid_map[row][column] == GREEN and not obs_flag:
+							obs_flag = WHITE
+					
 				if obs_flag:
 					grid.grid_map[row][column] = obs_flag
 		else:
@@ -456,12 +472,10 @@ if __name__ == '__main__':
 				#press a for astar
 				if event.key == pygame.K_a:
 					print 'a* algorithm'
-					search.set_heuristic()
 					expand = search.astar()
 				#press g for greedy
 				if event.key == pygame.K_g:
 					print 'greedy algorithm'
-					search.set_heuristic()
 					expand = search.greedy()
 				#press p to show policy
 				if event.key == pygame.K_p:
