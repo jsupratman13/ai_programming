@@ -4,7 +4,7 @@ Notes for Astar search
 
 --Depth First Search--
 -go through one step at a time
--simplest but the least efficsent method
+-simplest but the least efficient method
 ex
 color position
 	for successor to node position
