@@ -334,14 +334,14 @@ class Search(object):
 		x = self.x
 		y = self.y
 		f = g + self.heuristic[x][y]
-		open_list = [[f,x,y,g]]
+		open_list = [[f,g,x,y]]
 		while open_list:
 			open_list.sort()
 			node = open_list.pop(0)
 			f = node[0]
-			x = node[1]
-			y = node[2]
-			g = node[3]
+			g = node[1]
+			x = node[2]
+			y = node[3]
 			
 			if x == self.goal[0] and y == self.goal[1]:
 #				print node
@@ -354,9 +354,9 @@ class Search(object):
 					y2 = y + self.motions[i][1]
 					if x2 >= 0 and x2 < len(self.expand) and y2 >= 0 and y2 < len(self.expand[0]):
 						if self.closed[x2][y2] == 0 and self.expand[x2][y2] != self.BLACK:
-							f = g + self.heuristic[x2][y2]
 							g = g + self.cost[self.expand[x2][y2]]
-							open_list.append([f,x2,y2,g])
+							f = g + self.heuristic[x2][y2]
+							open_list.append([f,g,x2,y2])
 							self.closed[x2][y2] = 1
 							self.action[x2][y2] = i
 		print 'no plan found'
