@@ -82,4 +82,116 @@ return best
 * steady state (incremental GA): generate one or two offsprings at each iteration and replace them
 * generational: generate n offspring (n=population size) and replace entire population at end of iteration
 
+##Fitness Function
+function that check to see how 'fit' or 'good' the canditate solution is with respect to the problem
+* should be fast
+* return quantitative measure (either high or low)
+
+##Parent Selection
+Crucial to the convergence rate of GA. Too similar is not good. Maintain good diversity, avoid premature convergence (entire population has extremely fit solution).
+###Fitness Proportionate Selection
+* most popular ways of parent selection, every individual can become a parent. 
+* probability of becoming a parent depends on the fitness, fitter individual have higher chance of mating.
+* in image, its like a circular wheel with divided into n(number of solutions) pies with each portion describing fitness
+* this is similar to how in particle filters select which particles to consider.
+* this doesnt work when fitness have negative value
+####Roulette Wheel Selection
+* fixed point is chosen on the wheel and the wheel is rotated. region of the wheel which comes in front of the fixed point is chosen
+```
+calculate S = sum of fitness
+generate random number between 0 and S
+starting from the top of the population keep adding the fitness to the partial sum P until P<S
+individual which p exceed s is the chosen individual
+```
+####Stochastic Universal Sampling
+* similar to roulette but we have multiple fixed point
+* this setup is better as high individuals get chosen at least once
+
+###Tournament Selection
+* select K individuals from population at random and select the best out of these to become a parent.
+* can work even if fitness value is negative
+
+###Rank Selection
+* can work even if fitness value is negative
+* used when individuals have close fitness value
+* may cause loss of selection pressure (picking fitter indivdials more likely)
+###Random Selection
+* randomly select from existing population
+* no selection pressure so this is usually avoided
+
+##Crossover
+* reproduction and biological crossover between two or more parents to produe one or more offsprings.
+* type below is generic and some design their own crossover operators depending on situation
+* denote as pc
+###One Point Crossover
+* random crossover point is selected and the tails of its parents are swapped to get new offsprings
+```
+0123456 -> 0123 456 -> 0123222
+4444222 -> 4444 222 -> 4444456
+```
+###Multi Point Crossover
+* generalized one point cross over where alternating segments are sqapped to get new offsprings
+```
+0123456 -> 01 234 56 -> 0144222
+4444222 -> 44 442 22 -> 4423422
+```	
+###Uniform Crossover
+* treat each gene seperately, decided whether to switch or not
+* deciding the swith can be biased or non-biased
+```
+0123456 -> 4144426
+4444222 -> 0423252
+```
+###Whole Arighmetic Recombination
+* commonly used for integer representation by taking the weight average of the two parents by using the forumula
+```
+child1 = ax + (1-a)y
+child2 = ax + (1-a)y
+```
+###Davis Order Crossover (OX1)
+* used for premutation based crossover with intention of transmitting information about relative ordering to the offsprings
+* create two random crossover point in the parent and copy the segment between them from the first parent to the first offspring
+* starting from second crossover point in the second parent, copy the remaining unsued numbers from the second parent to the first child wrapping around the list
+* repeat for the second child with the parents role reverse
+###Others
+* Partially Mapped Crossover (PMX)
+* Order Based Crossover (OX2)
+* Shuffle Crossover
+* Ring Crossover etc.
+
+##Mutation
+* random tweak in the chromosome to get new solution
+* used to maintain and introduce diversity in the genetic population is usually aplied with a low probability (if two high, GA becomes random search)
+* denote pm
+###Bit Flip Mutation
+* select one or more random bits and flip them
+* used in binary encoded GA
+```
+00011010 -> 01011010
+```
+###Random Resetting
+* integer representation version for bit flip mutation
+* one or more random interger is swapped to different values
+
+###Swap Mutation
+* select two positions at random and swap them
+* commonly used in premutation based encoding
+```
+123456 -> 1 2 345 6 -> 163452
+```
+###Scramble Mutation
+* popular in premutation representation
+* subset genes is chosen and their values are scramble or shuffle randomly
+```
+123456 -> 12 345 6 -> 124536
+```
+###Inversion Mutation
+* similar to scramble mutation except instead of shuffling it is inversed
+```
+123456 -> 12 345 6 -> 125436
+```
+
+##Survivor Selection
+* select which chromosome will live and replace eliminated chromosome with new random chromosome
+
 
