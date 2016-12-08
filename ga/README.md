@@ -71,4 +71,15 @@ return best
 * in many problems, solution is represented by an order of elements.
 * ex travelling salesman problem (cost of distance to travel and find minimum cost)
 
+##Population
+* diversity of population must be maintained
+* size should not be very large. find the optimal size through trial and error
+* usually defined as two dimensional arry of size population, size x, chromosome size
+###Population Inititialization
+* random initialization: completely random solution
+* heuristic initialization: use known heuristc for the problem (should not used often as it will not give diversity)
+###Population Model
+* steady state (incremental GA): generate one or two offsprings at each iteration and replace them
+* generational: generate n offspring (n=population size) and replace entire population at end of iteration
+
 
