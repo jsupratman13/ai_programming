@@ -53,6 +53,9 @@ def evolve(population, target, retain=0.2, random_select=0.5, mutate=0.01):
     return parents
 
 if __name__ == '__main__':
+#Example problem: Create a list of N numbers where sum equals to the target value
+#ex: N=5, target = 200, list=[40,40,40,40,40]or[50,50,50,25,25]or[200,0,0,0,0]
+
     target = 371
     number_of_population = 100
     length_of_chromosome = 5
@@ -63,7 +66,9 @@ if __name__ == '__main__':
     for i in xrange(100):
         p = evolve(p,target)
         fitness_history.append(grade(p,target))
-    for datum in fitness_history:
-        print datum
+    print 'fitness history: '
     print fitness_history
+    print 'best population result '
+    print p[0]
+    print 'target: '+str(target)+ ' population: ' + str(sum(p[0]))
 
