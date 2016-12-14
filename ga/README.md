@@ -82,7 +82,7 @@ return best
 * steady state (incremental GA): generate one or two offsprings at each iteration and replace them
 * generational: generate n offspring (n=population size) and replace entire population at end of iteration
 
-##Fitness Function
+#Fitness Function
 function that check to see how 'fit' or 'good' the canditate solution is with respect to the problem
 * should be fast
 * return quantitative measure (either high or low)
@@ -100,7 +100,7 @@ Crucial to the convergence rate of GA. Too similar is not good. Maintain good di
 ```
 calculate S = sum of fitness
 generate random number between 0 and S
-starting from the top of the population keep adding the fitness to the partial sum P until P<S
+starting from the top of the population keep adding the fitness to the partial sum P until P < S
 individual which p exceed s is the chosen individual
 ```
 ####Stochastic Universal Sampling
@@ -193,5 +193,21 @@ child2 = ax + (1-a)y
 
 ##Survivor Selection
 * select which chromosome will live and replace eliminated chromosome with new random chromosome
+* usually fittest population remains
+###Age Based Selection
+* population is allowed for a finite generation of time
+* population is elimatned after a number of generation even if it was the fittest
+* eliminate the oldest generation
+###Fitness Based Selection
+* replace the least fit population
 
+##Termination
+* terminate when there is no improvement (divergence or oscillates)
+* reach absolute number of generation
+* when value reached a predefine value(converge to solution)
+
+##Genetic Models
+* Darwinian model of evolution -> natural selection
+* Lamarckian model -> ancestor traits is passed down to offsprint
+* Baldwinian model -> between darwinian model and lamarckian model
 
