@@ -111,7 +111,7 @@ class Search(object):
 		self.L_GREEN = world.L_GREEN
 		
 		#cost
-		self.cost = {self.WHITE:1, self.GREEN:7}
+		self.cost = {self.WHITE:1, self.GREEN:5}
 
 		#movement
 		self.motions = [[-1,0],#up
