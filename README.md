@@ -6,6 +6,7 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
 * Behavior Tree (BT)
 * Goal Oriented Action Planning (GOAP)
 * Hierarchial Task Network Planner (HTN Planner)
+* Utility Based System
 * Localization
   * Histogram Filter
   * Particle Filter
@@ -22,5 +23,4 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
 ##Planned
 - [ ] Rule Based
 - [ ] Hierarchal Finite State Machine (HFSM)
-- [ ] Utility System
 - [ ] Machine Learning
