@@ -12,6 +12,7 @@ def create_population(count, length, min_val, max_val):
     #max_val,min_val: randomize allele within these value
     return [create_chromosome(length, min_val, max_val) for x in xrange(count)]
 
+#distance between target and solution. lower is better in this case
 def fitness_function(chromosome, target):
     total = reduce(add,chromosome,0)
     #total = reduce(lambda x,y: x+y, chromosome,0)
@@ -23,20 +24,24 @@ def grade(population,target):
     return avg/(len(population)*1.0)
 
 def evolve(population, target, retain=0.2, random_select=0.5, mutate=0.01):
+    #determine fitness
     graded = [(fitness_function(chromosome, target), chromosome) for chromosome in population]
-    graded = [ x[1] for x in sorted(graded)]
-    retain_length = int(len(graded)*retain)
+    graded = [ x[1] for x in sorted(graded)] #sort from least to highest chromosome
+    retain_length = int(len(graded)*retain) #select certain percentage of list
+    
+    #parent selection; RANK SELECTION with random percentage of least fitted chromosome
     parents = graded[:retain_length]
-    #randomly add indviduals to promote genetic diversity
     for individual in graded[retain_length:]:
         if random_select > random():
             parents.append(individual)
+    
     #mutate some individual: RANDOM RESETTING
     for individual in parents:
         if mutate > random():
             position_to_mutate = randint(0,len(individual)-1)
             individual[position_to_mutate] = randint(min(individual), max(individual))
-    #crossover: MULTIPOINT CROSSOVER
+    
+    #crossover: ONEPOINT CROSSOVER at center
     parents_length = len(parents)
     desired_length = len(population) - parents_length
     children = []
@@ -62,7 +67,7 @@ if __name__ == '__main__':
     min_length = 0
     max_length = 100
     p = create_population(number_of_population, length_of_chromosome, min_length, max_length)
-    fitness_history = [grade(p,target),]
+    fitness_history = [grade(p,target)]
     for i in xrange(100):
         p = evolve(p,target)
         fitness_history.append(grade(p,target))

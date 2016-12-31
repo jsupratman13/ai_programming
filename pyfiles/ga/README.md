@@ -1,5 +1,7 @@
 #Genetic Algorithm
 Genetic Algorithm of (GA) is a search-based optimization technique based of the principles of Genetic and Natural selection or better known as 'survival of the fittest'. Often used to find optimal or near optimal solutions to problem that might take lifteime to solve. Thus it is useful in situation where it doesn't necessary have to find the 'best' solution but 'several good solutions' quickly.
+* They can find better answers to a question but not solve a new question
+* ex make car, ga gives better car but never give a boat
 
 ##Advantages
 * do not require derivative information (which is often occurs in real-world problems)
