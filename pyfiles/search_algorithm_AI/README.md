@@ -1,3 +1,24 @@
+#Search Based Algorithm
+Search Based Algorithm is usually used in finding the optimal solution to problems. It is typically used in path planning.
+
+##Category
+###Single Solution
+Finds an optimal solution
+####Without Cost
+Search for an optimal solution without considering the characteristic of each node
+* depth first search
+* breadth first search
+####With Cost
+Search for an optimal solution while considering the characteristic of each node
+* dijkstra algorithm
+* greedy best search
+* a star algorithm
+
+###Multiple Solution
+Finds multiple best solutions
+* dynamic programming (only in interaction)
+* genetic algorithm
+
 #Heuristic
 ##Euclidean Distance
 * distance between two points

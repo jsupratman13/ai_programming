@@ -5,7 +5,7 @@
 #Game AI Summary
 Game AI are generally split into two types of AI:
 * Reaction Type
-* Deliberation Type
+* Nonreactive Type
 
 ##Reactive AI
 Reactive type are AI that change its states in response to its environment.
