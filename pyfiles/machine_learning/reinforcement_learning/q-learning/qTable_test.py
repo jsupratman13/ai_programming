@@ -57,8 +57,8 @@ class QLearning(object):
         self.QTable = [[int(round(row)) for row in self.QTable[col]]for col in range(len(self.QTable))]
     
     def print_QTable(self):
-        for i in self.QTable:
-            print i
+        print 'QTable:'
+        print('\n'.join([''.join(['{:4}'.format(item) for item in row])for row in self.QTable]))
  
 if __name__ == '__main__':
     state = ['A','B','C','D','E','F']
@@ -76,6 +76,7 @@ if __name__ == '__main__':
     agent.train_QTable()
     agent.print_QTable()
     path = agent.use_QTable(state.index('C'))
+    print 'path:',
     for i in path:
         print state[i],
 
