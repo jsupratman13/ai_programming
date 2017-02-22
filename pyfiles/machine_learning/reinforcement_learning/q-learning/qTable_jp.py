@@ -6,8 +6,8 @@ class QLearning(object):
         self.QTable = None
         self.R = R
         self.goal = goal
-        self.gamma = gamma #closer to 1 delay reward, closer to 0 immediate reward
-        self.num_episodes = episodes #more episodes means more training
+        self.gamma = gamma #1に近いほど遅れ報酬
+        self.num_episodes = episodes #エピソードが多い場合訓練が増える
 
     def get_possible_action(self,current_state):
         actions = []
@@ -20,40 +20,40 @@ class QLearning(object):
         path = [current_state]
         while current_state != self.goal:
             QValue = 0
-            #pick action with the highest QValue
+            #一番高いQValueのactionを選ぶ
             for action in self.get_possible_action(current_state):
                 if QValue < self.QTable[current_state][action]:
                     QValue = self.QTable[current_state][action]
                     new_state = action
-            #append action to the path
+            #actionをにpath追加
             path.append(new_state)
-            #set next state as current state
+            #新しい状態を現在状態にセットする
             current_state = new_state
         return path
 
     def train_QTable(self):
-        #initialize QTable
+        #QTableを初期化
         self.QTable = [[0 for row in range(len(self.R[0]))]for col in range(len(self.R))]
 
         for episode in range(self.num_episodes):
-            #randomly pick initial state
+            #ランダムに初期状態を選ぶ
             current_state = np.random.randint(len(self.R))
             while True:
-                #randomly pick possible action from current state
+                #現在の状態に対して移動できる状態を探す
                 possible_action = self.get_possible_action(current_state)
-                #consider new state
+                #新しい状態をランダムに選ぶ
                 new_state = np.random.choice(possible_action)
-                #find all Qvalue for new state with all possible action
+                #新しい状態に対してすべてのQValueを探す
                 Qvalue = []
                 for action in self.get_possible_action(new_state):
                     Qvalue.append(self.QTable[new_state][action])
-                #Compute
+                #式を計算する
                 self.QTable[current_state][new_state] = self.R[current_state][new_state] + self.gamma*max(Qvalue)
-                #set new state as current state
+                #新しい状態を現在状態にセットする
                 current_state = new_state
-                #if current_state is goal finish session
+                #もし現在状態がゴールの場合、このセッションを終了する
                 if current_state == self.goal: break
-        #Round to the nearest integer
+        #必要ないがQTableを丸める。
         self.QTable = [[int(round(row)) for row in self.QTable[col]]for col in range(len(self.QTable))]
     
     def print_QTable(self):
@@ -62,7 +62,7 @@ class QLearning(object):
  
 if __name__ == '__main__':
     state = ['A','B','C','D','E','F']
-    #Reward Matrix, -1 is wall else reward value
+    #Reward Matrix, -1 が壁
     #Action  A,  B,  C,  D,  E,  F  #State
     R =  [[ -1, -1, -1, -1,  0, -1],#A
           [ -1, -1, -1,  0, -1,100],#B
