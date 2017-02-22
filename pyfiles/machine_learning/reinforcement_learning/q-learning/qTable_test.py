@@ -18,7 +18,7 @@ class QLearning(object):
 
     def use_QTable(self,current_state):
         path = [current_state]
-        while current_state != goal:
+        while current_state != self.goal:
             QValue = 0
             #pick action with the highest QValue
             for action in self.get_possible_action(current_state):
@@ -33,7 +33,7 @@ class QLearning(object):
 
     def train_QTable(self):
         #initialize QTable
-        self.QTable = [[0 for row in range(len(R[0]))]for col in range(len(R))]
+        self.QTable = [[0 for row in range(len(self.R[0]))]for col in range(len(self.R))]
 
         for episode in range(self.num_episodes):
             #randomly pick initial state
@@ -52,7 +52,7 @@ class QLearning(object):
                 #set new state as current state
                 current_state = new_state
                 #if current_state is goal finish session
-                if current_state == goal: break
+                if current_state == self.goal: break
         #Round to the nearest integer
         self.QTable = [[int(round(row)) for row in self.QTable[col]]for col in range(len(self.QTable))]
     
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     agent = QLearning(R,goal)
     agent.train_QTable()
     agent.print_QTable()
-    path = agent.use_QTable(2)
+    path = agent.use_QTable(state.index('C'))
     for i in path:
         print state[i],
 
