@@ -1,7 +1,7 @@
-#Game AI Architecture Examples UNDERCONSTRUCTION
-Collection of behavior selection AI written in Python2.7. Note that programs here are not the only way to write the code. Programs here only demonstrates the basic concept and intended to be used to understand the flow of the AI architecture.
+# AI for robot collection
+Collection of AI for self study
 
-##Current Types of AI
+## Current Types of AI
 * Finite State Machine (FSM)
 * Behavior Tree (BT)
 * Goal Oriented Action Planning (GOAP)
@@ -19,8 +19,10 @@ Collection of behavior selection AI written in Python2.7. Note that programs her
   * Dynamic Programming
 * Genetic Algorithm
 * Monte Carlo Method
+* Machine Learning
+  * Q-Learning
 
-##Planned
+## Planned
 - [ ] Rule Based
 - [ ] Hierarchal Finite State Machine (HFSM)
 - [ ] Machine Learning
