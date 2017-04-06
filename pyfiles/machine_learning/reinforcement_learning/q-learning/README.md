@@ -1,4 +1,4 @@
-#Q-Learning
+# Q-Learning
 * type of reinforcement learning algorithm
 * given the Qtable Q, reward matrixR, learning paramteter y
 ```
@@ -9,7 +9,7 @@ Q(state,action) = R(state,action) + y*Max(Q(next state, all actions))
 * Q and R are matrix
 * y or gamma has range from 0 to 1. if y is closer to zero, agent will tend to consider only immediate reward. if y is closer to one the agent will consider future reward with greater weight, willing to delay the reward
 
-##Q Learning Algorithm
+## Q Learning Algorithm
 * Given: state diagram with goal state (represented by reward matrix R)
 * Find: Minimum path from any initial state to the goal state (represented by matrix Q)
 ```
@@ -31,7 +31,7 @@ end for
 * the purpose of training is to enhance the brain of the agent that represented by Q matrix
 * in training, the agent explores the environment, get the reward until it reach goal state
 
-##Utilizing Qtable
+## Utilizing Qtable
 * The agent traces the sequence of state from the initial state until goal state
 * algorithm is as simple as finding the action that makes maximum Q for current state
 ```
