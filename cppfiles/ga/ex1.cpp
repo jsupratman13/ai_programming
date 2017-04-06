@@ -14,6 +14,7 @@ void pairing(int num, int length, int **population, int **pair);
 void mutation(int mutation_rate, int length, int individual, int **population);
 double average_fitness(int num, int *fitness);
 
+//Giraffe neck, longer the better up to ??m
 int main()
 {
     int **population;       //個体集合
@@ -93,6 +94,7 @@ int main()
 
         //終了判定
         if(average_fitness(num, fitness) > gole){
+        //if(generation > 1000){
             printf("目標適応度に到達したため終了します\n");
             break;
         }
@@ -120,7 +122,8 @@ int calc_fitness(int individual, int length, int **population)
     for(i=0; i<length; i++){
         fitness = fitness + population[individual][i];
     }
-    return 10 * fitness;
+    //return 10 * fitness; //longer the better
+    return 10*fitness-fitness*fitness; //longer -> heavier -> not good
 }
 
 void roulette_selection(int num, int length, int **population, int *fitness)
