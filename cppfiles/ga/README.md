@@ -1,4 +1,4 @@
-#Genetic Algorithm example in C
+# Genetic Algorithm example in C
 
-##Compiling Method
+## Compiling Method
 gcc [filename].c
