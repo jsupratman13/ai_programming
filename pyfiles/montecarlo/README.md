@@ -1,4 +1,4 @@
-#Monte Carlo Method
+# Monte Carlo Method
 Monte Carlo Method is a broad class of computationl algorithm that relies on random sampling to obtained numerical results. Often use to compute physical and mathematical problems.
 This is method is often used in three problem classes:
 * optimization
@@ -6,7 +6,7 @@ This is method is often used in three problem classes:
 * generating draws from a probability distribution
 Monte Carlo Localization (MCL) is used in robotics to determine the position of the robot.
 
-##Method
+## Method
 Monte Carlo generally follows the pattern below (though in some cases it may differ):
 1. Define domain of possible inputs
 2. Generate input randomly from a probability distribution over the domain (more inputs mean high accuracy)
@@ -17,7 +17,7 @@ Generally it gives the ratio
 ratio = (no. chosen input)/(no. of total input)
 ```
 
-##Example
+## Example
 The following example tries to find the area of a circle with radius of one (obviously its 3.141).
 1. cut the circle into 4
 2. in box of area 1, we have quater of a circle inscribe to it
