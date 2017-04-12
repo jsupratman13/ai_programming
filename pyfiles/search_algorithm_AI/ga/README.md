@@ -137,78 +137,78 @@ individual which p exceed s is the chosen individual
 0123456 -> 01 234 56 -> 0144222
 4444222 -> 44 442 22 -> 4423422
 ```	
-###Uniform Crossover
+### Uniform Crossover
 * treat each gene seperately, decided whether to switch or not
 * deciding the swith can be biased or non-biased
 ```
 0123456 -> 4144426
 4444222 -> 0423252
 ```
-###Whole Arighmetic Recombination
+### Whole Arighmetic Recombination
 * commonly used for integer representation by taking the weight average of the two parents by using the forumula
 ```
 child1 = ax + (1-a)y
 child2 = ax + (1-a)y
 ```
-###Davis Order Crossover (OX1)
+### Davis Order Crossover (OX1)
 * used for premutation based crossover with intention of transmitting information about relative ordering to the offsprings
 * create two random crossover point in the parent and copy the segment between them from the first parent to the first offspring
 * starting from second crossover point in the second parent, copy the remaining unsued numbers from the second parent to the first child wrapping around the list
 * repeat for the second child with the parents role reverse
-###Others
+### Others
 * Partially Mapped Crossover (PMX)
 * Order Based Crossover (OX2)
 * Shuffle Crossover
 * Ring Crossover etc.
 
-##Mutation
+## Mutation
 * random tweak in the chromosome to get new solution
 * used to maintain and introduce diversity in the genetic population is usually aplied with a low probability (if two high, GA becomes random search)
 * denote pm
-###Bit Flip Mutation
+### Bit Flip Mutation
 * select one or more random bits and flip them
 * used in binary encoded GA
 ```
 00011010 -> 01011010
 ```
-###Random Resetting
+### Random Resetting
 * integer representation version for bit flip mutation
 * one or more random interger is swapped to different values
 
-###Swap Mutation
+### Swap Mutation
 * select two positions at random and swap them
 * commonly used in premutation based encoding
 ```
 123456 -> 1 2 345 6 -> 163452
 ```
-###Scramble Mutation
+### Scramble Mutation
 * popular in premutation representation
 * subset genes is chosen and their values are scramble or shuffle randomly
 ```
 123456 -> 12 345 6 -> 124536
 ```
-###Inversion Mutation
+### Inversion Mutation
 * similar to scramble mutation except instead of shuffling it is inversed
 ```
 123456 -> 12 345 6 -> 125436
 ```
 
-##Survivor Selection
+## Survivor Selection
 * select which chromosome will live and replace eliminated chromosome with new random chromosome
 * usually fittest population remains
-###Age Based Selection
+### Age Based Selection
 * population is allowed for a finite generation of time
 * population is elimatned after a number of generation even if it was the fittest
 * eliminate the oldest generation
-###Fitness Based Selection
+### Fitness Based Selection
 * replace the least fit population
 
-##Termination
+## Termination
 * terminate when there is no improvement (divergence or oscillates)
 * reach absolute number of generation
 * when value reached a predefine value(converge to solution)
 
-##Genetic Models
+## Genetic Models
 * Darwinian model of evolution -> natural selection
 * Lamarckian model -> ancestor traits is passed down to offsprint
 * Baldwinian model -> between darwinian model and lamarckian model
