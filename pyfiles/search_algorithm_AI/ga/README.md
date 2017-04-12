@@ -1,9 +1,9 @@
-#Genetic Algorithm
+# Genetic Algorithm
 Genetic Algorithm of (GA) is a search-based optimization technique based of the principles of Genetic and Natural selection or better known as 'survival of the fittest'. Often used to find optimal or near optimal solutions to problem that might take lifteime to solve. Thus it is useful in situation where it doesn't necessary have to find the 'best' solution but 'several good solutions' quickly.
 * They can find better answers to a question but not solve a new question
 * ex make car, ga gives better car but never give a boat
 
-##Advantages
+## Advantages
 * do not require derivative information (which is often occurs in real-world problems)
 * fast and efficient
 * good parallel capabilities
@@ -12,13 +12,13 @@ Genetic Algorithm of (GA) is a search-based optimization technique based of the 
 * always gets an answer which gets better over time
 * useful in situation when search space is large and therea are a large number of parameters
 
-##Disadvantages
+## Disadvantages
 * not suited for problems which are simple and where derivative information is available
 * computationally expensive for some problem
 * stochastic, doesn't guarantee optimal solution
 * may not converge to solution if not implmented properly
 
-##Terminology
+## Terminology
 * population: all posible solution of a given problem
 * chromosomes: one section of population, one specific solution
 * gene: one section of chromosomes, one information of solution
@@ -31,13 +31,13 @@ Genetic Algorithm of (GA) is a search-based optimization technique based of the 
 * fitness function: function for determining suitablity of solution
 * genetic operators: alter genetic composition of the offspring (crossover, mutation, selection, etc.)
 
-##Basic Structure
+## Basic Structure
 * initialize population (random or heuristic)
 * select parents from population
 * apply crossover and mutation to produce new offspring
 * offspring replace population
 
-###Pseudo Code
+### Pseudo Code
 ```
 initialize population
 find fitness of population
@@ -51,53 +51,53 @@ while (termination criteria is has not reached):
 return best
 ```
 
-##Genotype Representation
+## Genotype Representation
 * mapping suitable representation is important for GA to produce good solution
 * represenation may change depending on situation
 
-###Binary Representation
+### Binary Representation
 * simplest and widely used
 * may represent boolean or 0,1 where x-term tells whether item x is picked(1) or not(0)
 * use gray coding
 
-###Real Valued Representation
+### Real Valued Representation
 * represent gene using continuous rather than discrete variable
 * use real value or floating point numbers
 * limited to computer computation
 
-###Integer Representation
+### Integer Representation
 * discrete value where solution cannnot be binary(yes,no) is represented as integer
 * ex North South East West -> 0,1,2,3
 
-###Permutation Representation
+### Permutation Representation
 * in many problems, solution is represented by an order of elements.
 * ex travelling salesman problem (cost of distance to travel and find minimum cost)
 
-##Population
+## Population
 * diversity of population must be maintained
 * size should not be very large. find the optimal size through trial and error
 * usually defined as two dimensional arry of size population, size x, chromosome size
-###Population Inititialization
+### Population Inititialization
 * random initialization: completely random solution
 * heuristic initialization: use known heuristc for the problem (should not used often as it will not give diversity)
-###Population Model
+### Population Model
 * steady state (incremental GA): generate one or two offsprings at each iteration and replace them
 * generational: generate n offspring (n=population size) and replace entire population at end of iteration
 
-#Fitness Function
+# Fitness Function
 function that check to see how 'fit' or 'good' the canditate solution is with respect to the problem
 * should be fast
 * return quantitative measure (either high or low)
 
-##Parent Selection
+## Parent Selection
 Crucial to the convergence rate of GA. Too similar is not good. Maintain good diversity, avoid premature convergence (entire population has extremely fit solution).
-###Fitness Proportionate Selection
+### Fitness Proportionate Selection
 * most popular ways of parent selection, every individual can become a parent. 
 * probability of becoming a parent depends on the fitness, fitter individual have higher chance of mating.
 * in image, its like a circular wheel with divided into n(number of solutions) pies with each portion describing fitness
 * this is similar to how in particle filters select which particles to consider.
 * this doesnt work when fitness have negative value
-####Roulette Wheel Selection
+#### Roulette Wheel Selection
 * fixed point is chosen on the wheel and the wheel is rotated. region of the wheel which comes in front of the fixed point is chosen
 ```
 calculate S = sum of fitness
@@ -105,33 +105,33 @@ generate random number between 0 and S
 starting from the top of the population keep adding the fitness to the partial sum P until P < S
 individual which p exceed s is the chosen individual
 ```
-####Stochastic Universal Sampling
+#### Stochastic Universal Sampling
 * similar to roulette but we have multiple fixed point
 * this setup is better as high individuals get chosen at least once
 
-###Tournament Selection
+### Tournament Selection
 * select K individuals from population at random and select the best out of these to become a parent.
 * can work even if fitness value is negative
 
-###Rank Selection
+### Rank Selection
 * can work even if fitness value is negative
 * used when individuals have close fitness value
 * may cause loss of selection pressure (picking fitter indivdials more likely)
-###Random Selection
+### Random Selection
 * randomly select from existing population
 * no selection pressure so this is usually avoided
 
-##Crossover
+## Crossover
 * reproduction and biological crossover between two or more parents to produe one or more offsprings.
 * type below is generic and some design their own crossover operators depending on situation
 * denote as pc
-###One Point Crossover
+### One Point Crossover
 * random crossover point is selected and the tails of its parents are swapped to get new offsprings
 ```
 0123456 -> 0123 456 -> 0123222
 4444222 -> 4444 222 -> 4444456
 ```
-###Multi Point Crossover
+### Multi Point Crossover
 * generalized one point cross over where alternating segments are sqapped to get new offsprings
 ```
 0123456 -> 01 234 56 -> 0144222
