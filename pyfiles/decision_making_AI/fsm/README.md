@@ -1,10 +1,10 @@
-#Finite State Machine Example
+# Finite State Machine Example
 The most basic form of AI.
 
-##Pros
+## Pros
 * simple to build
 * easy to understand
 
-##Cons
+## Cons
 * Harder to manage as states increases
 * Harder to understand as states increases

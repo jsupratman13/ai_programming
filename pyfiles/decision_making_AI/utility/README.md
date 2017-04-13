@@ -1,7 +1,7 @@
-#Utility Based System
+# Utility Based System
 Unlike the other AI, this AI architecture closely resembles human emotions. In concept, instead of switching states(action or task) based on environment triggers, the agent assesses the available states in their current environmnent and asssign a utility (benefits) for each states on a continous scale. The agent then execute the state with the the greatest utility.
 
-##Utility Function
+## Utility Function
 When assigning utility to different action, it is helpful to graph the function.
 There are several type of function
 * Step Function
@@ -11,13 +11,13 @@ There are several type of function
 * Exponential Decay
 * Sigmoid Curve
 
-##Multiple Variable
+## Multiple Variable
 Most of the time, the utility of an action depends on two or more variables. In this case for utilities U1 and U2, combine them as follows: 
 ```
 Utility = U1 - U2
 ```
 
-##Example
+## Example
 For example we have a three action Attack, Heal, Reload with variable HP, Health and Bullet. Say for each action we have linear, sigmoid and exponential decay for utility function. 
 ```
 enemy HP = 6 -> utility of attack = 40
