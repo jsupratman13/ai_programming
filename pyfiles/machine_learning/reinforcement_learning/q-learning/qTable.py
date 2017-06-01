@@ -84,11 +84,11 @@ if __name__ == '__main__':
           [ -1, -1,  0, -1, -1,  0, -1,  0],#G
           [ -1, -1, -1, -1, -1, -1,  0, -1]]#H
 
-    agent = QLearning(R2,goal2)
+    agent = QLearning(R,goal)
     agent.train_QTable()
     agent.print_QTable()
-    path = agent.use_QTable(state2.index('A'))
-    print 'path:',
-    for i in path:
-        print state2[i],
+#    path = agent.use_QTable(state2.index('A'))
+#    print 'path:',
+#    for i in path:
+#        print state2[i],
 
