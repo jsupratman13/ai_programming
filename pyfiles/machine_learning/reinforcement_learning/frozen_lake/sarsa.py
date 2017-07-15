@@ -1,22 +1,22 @@
 import gym
 import numpy as np
+import sys
 
 class Agent(object):
     def __init__(self, env):
         self.env = env
         self.gamma = 0.99
-        self.alpha = 0.1
-        self.num_episodes = 100
-        self.epsilon = 0.5
+        self.alpha = 0.01
+        self.num_episodes = 20000
+        self.num_trials = 100
+        self.epsilon = 0.3
         self.Q = np.zeros([env.observation_space.n, env.action_space.n])
 
-    def set_RL(self, gamma, alpha, num_episodes):
-        self.gamma = gamma
-        self.alpha = alpha
-        self.num_episodes = num_episodes
-
-    def set_epsilon(self, eps):
-        self.epsilon = eps
+    def save_table(self, filename='check.npy'):
+        np.save(filename, self.Q)
+    
+    def load_table(self, filename):
+        self.Q = np.load(filename)
 
     def epsilon_greedy(self, Q, state):
         e = np.random.uniform()
@@ -37,14 +37,16 @@ class Agent(object):
                 s = s2
                 a = a2
                 if done: break
-    
-    def test(self):
+        self.save_table()
+
+    def test(self,render=False):
         total_reward = 0
-        for i in range(100):
+        if render: self.num_trials = 1
+        for i in range(self.num_trials):
             s = self.env.reset()
             reward = 0
             while True:
-                #self.env.render()
+                if render: self.env.render()
                 a = np.argmax(self.Q[s,:])
                 s2, r, done, info = self.env.step(a)
                 s = s2
@@ -52,13 +54,21 @@ class Agent(object):
                 if done:
                     break
             total_reward += reward
-        print 'success rate: ' + str(total_reward/100)
+        print 'success rate: ' + str(total_reward/self.num_trials)
 
 if __name__=='__main__':
+    if len(sys.argv) < 2:
+        assert False, 'missing argument'
     env = gym.make('FrozenLake-v0')
     agent = Agent(env)
-    agent.set_RL(0.99, 0.01, 20000)
-    agent.set_epsilon(0.3)
-    agent.test()
-    agent.train()
-    agent.test()
+    if str(sys.argv[1]) == 'train':
+        if len(sys.argv) > 2: agent.load_table(str(sys.argv[2]))
+        agent.train()
+    if str(sys.argv[1]) == 'test':
+        if len(sys.argv) < 3: assert False, 'missng .npy table'
+        agent.load_table(str(sys.argv[2]))
+        if len(sys.argv) > 3 and str(sys.argv[3]) == 'render':
+               agent.test(render=True)
+        else:
+            agent.test()
+
