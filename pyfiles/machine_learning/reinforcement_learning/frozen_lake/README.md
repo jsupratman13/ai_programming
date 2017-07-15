@@ -2,7 +2,7 @@
 
 ## Training and Testing
 ```
-python q_learning.py 
+python <filename>.py 
 ```
 
 ## Environment
