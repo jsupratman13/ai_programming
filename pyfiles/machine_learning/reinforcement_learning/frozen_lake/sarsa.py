@@ -29,13 +29,15 @@ class Agent(object):
     def train(self):
         for episode in range(self.num_episodes):
             s = self.env.reset()
+            a = self.epsilon_greedy(self.Q,s) 
             while True:
-                a = self.epsilon_greedy(self.Q, s)
-                s2, r, done, info = self.env.step(a)
-                self.Q[s,a] = self.Q[s,a] + self.alpha * (r + self.gamma * np.max(self.Q[s2,:]) - self.Q[s,a])
+                s2 , r, done, info = self.env.step(a)
+                a2 = self.epsilon_greedy(self.Q,s2)
+                self.Q[s,a] = self.Q[s,a] + self.alpha * (r + self.gamma * self.Q[s2,a2] -  self.Q[s,a])
                 s = s2
+                a = a2
                 if done: break
-
+    
     def test(self):
         total_reward = 0
         for i in range(100):
