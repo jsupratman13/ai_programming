@@ -11,7 +11,7 @@ pip install tensorflow
 ```
 ## Content
 Environment problems are classified as below. Depending on the type of problem, different RL algorithms are given
-* discrete state and action: frozen lake
+* discrete state and action: frozen lake, frozen lake not slippery
 * continuous state and discrete action: mountain car, cartpole
 * continuous state and action: pendulum
 
