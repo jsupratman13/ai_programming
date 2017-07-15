@@ -11,17 +11,17 @@ Type: Discrete
 
 Num | | | ||
 ----|-|-|-|-
- |0|1|2|3
- |4|5|6|7
- |8|9|10|11
- |12|13|14|15
+_|0|1|2|3
+_|4|5|6|7
+_|8|9|10|11
+_|12|13|14|15
 
 Observation | | | | |
 ------------|-|-|-|-
- |S|F|F|F
- |F|H|F|H
- |F|F|F|H
- |H|F|F|G
+_|S|F|F|F
+_|F|H|F|H
+_|F|F|F|H
+_|H|F|F|G
 
 ### Actions
 Type: Discrete
@@ -29,7 +29,7 @@ Type: Discrete
 Num | Observation
 ----|------------
 0   | move left
-1   | move up
+1   | move down
 2   | move right
-3   | move down
+3   | move right
 
