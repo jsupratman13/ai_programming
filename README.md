@@ -23,6 +23,7 @@ Collection of AI for self study
   * Q-Learning
 
 ## Planned
-- [ ] Rule Based
-- [ ] Hierarchal Finite State Machine (HFSM)
-- [ ] Machine Learning
+* Rule Based
+* Hierarchal Finite State Machine (HFSM)
+* Policy Gradient
+* A3C
