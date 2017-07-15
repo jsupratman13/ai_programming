@@ -31,5 +31,5 @@ Num | Observation
 0   | move left
 1   | move down
 2   | move right
-3   | move right
+3   | move up
 
