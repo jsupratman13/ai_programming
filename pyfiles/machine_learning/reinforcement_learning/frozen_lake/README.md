@@ -1,8 +1,17 @@
 # Frozen Lake problem
 
-## Training and Testing
+## Training
 ```
-python <filename>.py 
+python <filename>.py test
+```
+
+## Testing
+```
+python <filename>.py test <filename>.npy
+```
+to view simulation
+```
+python <filename>.py test <filename>.npy render
 ```
 
 ## Environment

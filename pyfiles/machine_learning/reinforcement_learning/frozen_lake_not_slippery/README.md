@@ -1,9 +1,18 @@
 # Frozen Lake Not Slippery problem
 Same thing as frozen lake but no noise, all action are deterministic
 
-## Training and Testing
+## Training
 ```
-python <filename>.py 
+python <filename>.py train
+```
+
+## Testing
+```
+python <filename>.py test <filename>.npy
+```
+to view simulation
+```
+python <filename>.py test <filename>.npy render
 ```
 
 ## Environment
