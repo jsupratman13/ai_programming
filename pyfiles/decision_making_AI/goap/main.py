@@ -2,50 +2,49 @@
 # @file main.py                #
 # @brief GOAP example          #
 # @author Joshua Supratman     #
-# @date 2016/01/07             #
+# @date 2017/09/07             #
 ################################
 
 from goap import WorldState, Action, Planner
-import time
 
 if __name__=='__main__':
-    initial_time = time.time()
 
-    world = WorldState('enemy_dead', 'tired', 'enemy_found', 'near_enemy', 'fear')
-    world.set_initialstate(enemy_dead=False, enemy_found=True, tired=True, near_enemy=False, fear=True)
-    world.set_goalstate(tired=False)
+#####################################################
+# KNOWLEDGE REPRESENTATION                         #
+#####################################################
+    world = WorldState('have_bullet', 'near_enemy', 'enemy_found', 'enemy_dead')
+    world.set_initialstate(have_bullet=False, near_enemy=False, enemy_found=False, enemy_dead=False)
+    world.set_goalstate(enemy_dead=True)
+####################################################
 
-    actionlist = []
-    
-    charge = Action('Charge', 3)
-    charge.set_precondition(enemy_found=True, near_enemy=False, fear=False)
-    charge.set_effects(near_enemy=True)
-    actionlist.append(charge)
+####################################################
+# ACTIONS                                         # 
+####################################################
+    patrol = Action('Patrol', 7)
+    patrol.set_precondition()
+    patrol.set_effects(enemy_found=True)
 
-    movein = Action('MoveIn', 5)
-    movein.set_precondition(enemy_found=True, near_enemy=False, fear=True)
-    movein.set_effects(near_enemy=True)
-    actionlist.append(movein)
+    reload = Action('Reload', 3)
+    reload.set_precondition(near_enemy=False)
+    reload.set_effects(have_bullet=True)
 
-    shoot = Action('Shoot',1)
-    shoot.set_precondition(enemy_dead=False, near_enemy=True, enemy_found=True)
-    shoot.set_effects(enemy_dead=True, near_enemy=False, enemy_found=False)
-    actionlist.append(shoot)
+    approach = Action('Approach', 3)
+    approach.set_precondition(enemy_found=True)
+    approach.set_effects(near_enemy=True)
 
-    idle = Action('Idle',3)
-    idle.set_precondition(enemy_found=False, tired=True)
-    idle.set_effects(tired=False)
-    actionlist.append(idle)
+    shoot = Action('Shoot', 1)
+    shoot.set_precondition(near_enemy=True, enemy_found=True, have_bullet=True)
+    shoot.set_effects(enemy_dead=True)
+####################################################
 
-    walk = Action('Walk', 5)
-    walk.set_precondition(enemy_found=False, tired=False)
-    walk.set_effects(tired=True)
-    actionlist.append(walk)
+    action_list = []
+    action_list.append(patrol)
+    action_list.append(reload)
+    action_list.append(approach)
+    action_list.append(shoot)
 
-    task = Planner(world, actionlist)
-    plans = task.process()
-    for plan in plans.actionlist:
+    planner = Planner()
+    plans = planner.process(world, action_list)
+    for plan in plans:
         print plan.name
-
-    print '\ntotal time: ' + str(time.time()-initial_time)
 

@@ -2,11 +2,11 @@
 # @file htn.py                 #
 # @brief HTN Planner core      #
 # @author Joshua Supratman     #
-# @date 2016/01/07             #
+# @date 2017/09/07             #
 ################################
 
-import copy, time, itertools
-from operator import itemgetter
+import copy
+
 class WorldState(object):
     def __init__(self, *args):
         self.define_status = args
@@ -19,7 +19,7 @@ class WorldState(object):
                 assert False, "initial state does not match with WorldState"
         self.current_state = kwargs 
 
-class CompoundTask:
+class CompoundTask(object):
     def __init__(self, name):
         self.name = name
         self.method_list = []
@@ -39,7 +39,7 @@ class CompoundTask:
         def set_subtask(self, *args):
             self.subtask = args
 
-class PrimativeTask(list):
+class PrimitiveTask(list):
     def __init__(self, name):
         self.name = name
         self.preconditions = None
@@ -68,103 +68,74 @@ class DecompHistory(list):
         return self.history_list
 
 class Planner(object):
-    def __init__(self, world, root_task):
-        self.world = world
-        self.pathplan = DepthFirstSearch(world, root_task)
-        self.mtr = 0
-
-    def print_world(self):
-        for status in self.world.current_state.iteritems():
-            print status,   
-
-    def process(self):
-        print '\ninitial status: ', 
-        self.print_world()
-        print '\n\ngenerating plan:'
-        plans, mtr = self.pathplan.formulate()
-        if plans is None:
-            assert False, "no plan could be generated"
-        self.mtr = mtr
-        return plans
-
-class DepthFirstSearch(object):
-    def __init__(self, world, root_task):
-        self.plans = []
-        self.working_state = world
-        self.task_list = [root_task]
-        self.method_list = []
+    def __init__(self):
+        self.__working_state = None
         self.decomphistory = DecompHistory()
-        self.mtr = 0
 
-    def find_mtr(self, task, pop_method):
-        for i,method in enumerate(task.method_list):
-            if pop_method.name == method.name:
-                return i
+    def process(self, world, root_task):
+        print '\ninitial status: ', 
+        for status in world.current_state.iteritems():
+            print status,   
+        
+        print '\n\ngenerating plan:'
+        plan, mtr = self._plan(world, root_task)
+        
+        print 'method to reconsider: ' + str(mtr)
 
+        if plan is None:
+            assert False, "no plan could be generated"
+        
+        return plan
+    
     def condition_met(self, method):
         for precondition in method.preconditions.iteritems():
-            if precondition not in self.working_state.current_state.iteritems():
+            if precondition not in self.__working_state.current_state.iteritems():
                 return False
         return True
 
-    def print_method(self, method_list):
-        for method in method_list:
-            print str(method.name) + ' subtask: ',
-            for task in method.subtask:
-                print str(task.name),
-            print ''
-
-    def find_method(self, task):
+    def _plan(self, world, root_task):
         method_list = []
-        for method in task.method_list:
-            if self.condition_met(method):
-                method_list.append(method)
-        return method_list
+        opt_plan = []
+        task_list = [root_task]
+        self.__working_state = copy.deepcopy(world)
+        mtr = 0
 
-    def formulate(self):
-        while self.task_list:
-            current_task = self.task_list.pop(0)
+        while task_list:
+            current_task = task_list.pop(0)
             if str(current_task.__class__.__name__) == 'CompoundTask':
-                print '\ncompound: ' + str(current_task.name)
-                self.method_list = self.find_method(current_task)
-                self.print_method(self.method_list)
+                method_list = [method for method in current_task.method_list if self.condition_met(method)]
                 
-                if self.method_list:
-                    print '**decomposing task**'
-                    m = self.method_list.pop(0)
-                    self.mtr += self.find_mtr(current_task, m)
-                    history = self.decomphistory.RecordHistory(current_task, self.method_list, self.task_list, self.working_state, self.plans, self.mtr)
-                    self.task_list[0:0] = m.subtask #extend and insert in beginning of list
+                if method_list:
+                    m = method_list.pop(0)
+                    mtr = next(i for i, method in enumerate(current_task.method_list) if method.name == m.name) 
+                    history = self.decomphistory.RecordHistory(current_task, method_list, task_list, self.__working_state, opt_plan, mtr)
+                    task_list[0:0] = m.subtask
                     self.decomphistory.history_list.append(history)
 
                 else:
-                    print '**no available method, returning to last decomposed task**'
                     history_list = self.decomphistory.RestoreHistory()
                     if history_list:
                         history = history_list.pop()
-                        self.task_list = history.last_recorded_task_list
-                        self.working_state= history.last_recorded_working_state
-                        self.plans = history.last_recorded_plans
-                        self.mtr = history.last_mtr
+                        task_list = history.last_recorded_task_list
+                        self.__working_state= history.last_recorded_working_state
+                        opt_plan = history.last_recorded_plans
+                        mtr = history.last_mtr
                     else:
                         return None
                 
-            elif str(current_task.__class__.__name__) == 'PrimativeTask':
-                print '\nprimative: ' + str(current_task.name)
+            elif str(current_task.__class__.__name__) == 'PrimitiveTask':
                 if self.condition_met(current_task):
-                    print '**add task to plans**'
-                    self.working_state.current_state.update(current_task.effects)
-                    self.plans.append(current_task)
+                    self.__working_state.current_state.update(current_task.effects)
+                    opt_plan.append(current_task)
                 
                 else:
-                    print '**condition not met, reset plans and returning to last decomposed task**'
                     history_list= self.decomphistory.RestoreHistory()
                     history = history_list.pop()
-                    self.task_list = history.last_recorded_task_list
-                    self.working_state = history.last_recorded_working_state
-                    self.plans = history.last_recorded_plans
-                    self.mtr = history.last_mtr
+                    task_list = history.last_recorded_task_list
+                    self.__working_state = history.last_recorded_working_state
+                    opt_plan = history.last_recorded_plans
+                    mtr = history.last_mtr
             else:
                 assert False, 'Unknown Task Type'
-
-        return self.plans, self.mtr
+        
+        return opt_plan, mtr

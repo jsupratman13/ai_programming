@@ -2,10 +2,10 @@
 # @file goap.py                #
 # @brief GOAP core             #
 # @author Joshua Supratman     #
-# @date 2016/01/07             #
+# @date 2017/09/07             #
 ################################
 
-import copy, itertools
+import copy
 
 class WorldState(object):
     def __init__(self, *args):
@@ -40,117 +40,73 @@ class Action(object):
         self.effects = kwargs
 
 class Planner(object):
-    def __init__(self, world, actionlist):
-        self.world = world
-        self.actionlist = actionlist
-        self.pathplan = AstarSearch(self.world, self.actionlist)
+    def __init__(self):
+        self.action_list = None
         
-    def check(self):
-        for action in self.actionlist:
-            for precondition in action.precondition:
-                if precondition not in self.world.define_status:
-                    assert False, "%s precondition does not match world state" %action.name
-            for effect in action.effects:
-                if effect not in self.world.define_status:
-                    assert False, "%s effect does not match world state" %action.name
-
-    def print_actionlist(self):
-        for action in self.actionlist:
-            print action.name
-    
-    def print_world(self):
-        for status in self.world.current_state.iteritems():
-            print status,
-    
-    def print_goal(self):
-        for goal in self.world.goal_state.iteritems():
-            print goal,
-
-    def process(self):
+    def process(self, world, action_list):
         print '\ninitial status: ', 
-        self.print_world()
-        print '\ngoal: ', 
-        self.print_goal()
-        print '\n\ngenerating plan:'
-        plans = self.pathplan.formulate()
-        if plans is None:
-            assert False, "no plan could be generated"
-        return plans
-
-class PartialPlan(object):
-    def __init__(self,world, actionlist, calc_cost):
-        self.world = world
-        self.actionlist = actionlist
-        self.cost = calc_cost
-
-    def __repr__(self):
-        return '{}'.format(self.cost)
-    
-    def __cmp__(self, other):
-        if hasattr(other, 'cost'):
-            return self.cost.__cmp__(other.cost)
-    
-    def print_plan(self):
-        for state in self.world.current_state.iteritems():
-            print state,
-        print ""
-        for action in self.actionlist:
-            print action.name,
-        print ""
-        print self.cost
-
-class AstarSearch(object):
-    def __init__(self, world, actionlist):
-        self.world = world
-        self.actionlist = actionlist
-        self.ol = []
-        self.cl = []
-    
-    def neighbor(self, parent):
-        neighbor_list = []
-        for action in self.actionlist:
-            if action in parent.actionlist:
-                continue
-            for precondition in action.precondition.iteritems():
-                if precondition not in parent.world.current_state.iteritems():
-                    break
-            else:
-                neighbor_list.append(action)
-        return neighbor_list
-
-    def update_status(self, action, parent):
-        successor = copy.deepcopy(parent)
-        successor.world.current_state.update(action.effects)
-        successor.actionlist.append(action)
-        successor.cost = successor.cost + action.cost #TODO; heuristic calculation and cost adjustment
-
-#       successor.print_plan()
-        return successor
-
-    def condition_met(self, successor):
-        for goal in self.world.goal_state.iteritems():
-            if goal not in successor.world.current_state.iteritems():
-                return False
-        return True
-
-    def formulate(self):
-        successor = PartialPlan(self.world, [],0)
-        self.ol.append(successor)
-        while self.ol:
-            self.ol.sort()
-            parent = self.ol.pop(0)
-            successor_list = self.neighbor(parent)
-            for action in successor_list:
-                successor = self.update_status(action, parent)
-                if self.condition_met(successor):
-                    return successor
-                for other_ol, other_cl in itertools.izip_longest(self.ol,self.cl):
-                    if other_ol and successor.actionlist == other_ol.actionlist and successor.cost > other_ol.cost:
-                        break
-                    if other_cl and successor.actionlist == other_cl.actionlist and successor.cost > other_cl.cost:
-                        break
-                else:
-                    self.ol.append(successor)
-            self.cl.append(parent)  
-            
+        for status in world.current_state.iteritems():
+            print status,
         
+        print '\ngoal: ', 
+        for goal in world.goal_state.iteritems():
+            print goal,
+        
+        print '\n\ngenerating plan:'
+        self.action_list = action_list
+        plan = self._plan(world.current_state, world.goal_state)
+        
+        if plan is None:
+            assert False, "no plan could be generated"
+    
+        return plan
+
+    def _plan(self, working_state, goal_state):
+        diff_set = list(set(goal_state) - set(working_state.items()))
+        subgoal = [key for key in diff_set if goal_state[key] != working_state[key]]
+
+        if len(subgoal) == 0:
+            return []
+
+        plan_list = []
+        action = []
+        for act in self.action_list:
+            for goal in subgoal:
+                if goal in act.effects and goal_state[goal] == act.effects[goal]:
+                    action.append(act)
+        
+        for realize in action:
+            plan = self._plan(working_state, realize.precondition)
+            if plan is None:
+                continue
+            else:
+                plan += [realize]
+
+            intermediate_working_state = copy.deepcopy(working_state)
+            for act in plan:
+                intermediate_working_state.update(act.effects)
+            
+            assert(intermediate_working_state is not None)
+            sub_plan = self._plan(intermediate_working_state, goal_state)
+
+            if sub_plan is None:
+                continue
+            else:
+                plan_list += [plan + sub_plan]
+
+        opt_plan = None
+        if len(plan_list) >= 2:
+            min_cost = 1000
+            for plan in plan_list:
+                cost = 0
+                for act in plan:
+                    cost += act.cost + 1 
+                if cost <= min_cost:
+                    min_cost = cost
+                    opt_plan = plan
+        
+        elif len(plan_list) == 1:
+            opt_plan = plan_list[0]
+        
+        return opt_plan
+    
