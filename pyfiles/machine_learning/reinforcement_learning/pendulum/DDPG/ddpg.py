@@ -20,8 +20,6 @@ critic_alpha = 0.001
 num_episode = 5000
 epsilon = 1
 
-OU = Ornstein_Uhlenbeck()
-
 env = gym.make('Pendulum-v0')
 num_action = env.action_space.shape[0]
 num_state = env.observation_space.shape[0]
@@ -53,35 +51,41 @@ try:
             epsilon *= 0.995
             loss = 0 
             a = actor.model.predict(s_t.reshape(1,s_t.shape[0]))
-            noise = max(epsilon,0) * OU.function(a[0], 0.0, 0.15, 0.3) 
-            a = a[0] + noise
+            #noise = max(epsilon,0) * OU.function(a[0], 0.0, 0.15, 0.3) 
+            #a = a[0] + noise
+            noise = Ornstein_Uhlenbeck(a[0])
+            a = a[0] + noise()[0]
             
             s2, r, done, info = env.step(np.array(a))
             s2_t = np.hstack((s2[0],s2[1],s2[2]))
 
             buff.add(s_t, a, r, s2_t, done)
-           
             batch = buff.get_batch(batch_size)
-            states = np.asarray([e[0] for e in batch])
-            actions = np.asarray([e[1] for e in batch])
-            reward = np.asarray([e[2] for e in batch])
-            new_states = np.asarray([e[3] for e in batch])
-            dones = np.asarray([e[4] for e in batch])
-            y_t = np.asarray([e[1] for e in batch])
-           
-            target_q = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])
-            
-            for k in range(len(batch)):
-                if dones[k]:
-                    y_t[k] = reward[k]
-                else:
-                    y_t[k] = reward[k] + gamma*target_q[k]
 
-            loss += critic.model.train_on_batch([states,actions], y_t)
-            a_for_grad = actor.model.predict(states)
-            grads = critic.gradients(states,a_for_grad)
-            actor.update_network(states,grads)
-            actor.update_target_network()
+            if len(batch) > batch_size:
+                states = np.asarray([e[0] for e in batch])
+                actions = np.asarray([e[1] for e in batch])
+                reward = np.asarray([e[2] for e in batch])
+                new_states = np.asarray([e[3] for e in batch])
+                dones = np.asarray([e[4] for e in batch])
+                y_t = np.asarray([e[1] for e in batch])
+               
+                target_q = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])
+                
+                for k in range(len(batch)):
+                    if dones[k]:
+                        y_t[k] = reward[k]
+                    else:
+                        y_t[k] = reward[k] + gamma*target_q[k]
+
+                loss += critic.model.train_on_batch([states,actions], y_t)
+                
+                a_for_grad = actor.model.predict(states)
+                grads = critic.gradients(states,a_for_grad)
+                actor.update_network(states,grads)
+
+                actor.update_target_network()
+                critic.update_target_network()
 
             total_reward += r
             s_t = s2_t
@@ -96,6 +100,6 @@ try:
         print 'episode: ' + str(i) + ' reward: ' + str(total_reward) + ' loss: ' + str(loss)
 
 except (KeyboardInterrupt, SystemExit):
-     print 'best_reward is: ' + str(best_r)
+    pass
 
 print 'finished, best reward is: ' + str(best_r)
