@@ -3,14 +3,16 @@ import numpy as np
 import math,sys
 from features import RBF
 
-def test(w, episode=100, rendering=False):
+def test(w, episode=1, rendering=False):
     reward = []
     for e in range(episode):
         s = env.reset()
         rt = 0
         while True:
-            if rendering: env.render()
             a = policy(s,w)
+            if rendering: 
+                env.render()
+     #           print a
             s2, r, done, info = env.step(a)
             s = s2
             rt += r
@@ -24,61 +26,69 @@ def record(l,w):
     reward = test(w)
     f.write(str(l)+','+str(reward)+'\n')
     f.close()
+    return reward
 
-def guassian_policy(s,a,w):
+def likelihood_function(s,a,w):
     sigma = 0.5
     phi = rbf.get_features(s)
-    a = a.item(0) + 2.0
+    a = a.item(0)
     mu = (phi.T*w).item(0)
     return ((a-mu)*phi)/(sigma**2)
 
 def sampling(w):
     sample = []
     s = env.reset()
-    while True:
+    for i in range(100):
         a = policy(s,w)
-        #a = env.action_space.sample()
         s2, r, done, info = env.step(a)
         sample.append([s,a,r])
         s = s2
-        if done:
-            break
+        #if done:
+        #    break
+    return discount_reward(sample)
+    
+def discount_reward(sample):
+    discount_r = 0
+    gamma = 1
+    for i in reversed(range(len(sample))):
+        discount_r = sample[i][2] + gamma * discount_r
+        sample[i][2] = discount_r
     return sample 
 
 def policy(s,w):
-    sigma = 0.5
     phi = rbf.get_features(s)
     mu = (phi.T*w).item(0)
-    s = s.item(0)
-    action = np.exp(((s-mu)**2)/(2*sigma**2))
-    return np.array([action - 2.0])
+    return np.array([mu])
 
-def REINFORCE(w, num_episodes=1):
+def REINFORCE(fixed_w, num_episodes=1):
     alpha = 0.001
+    w = fixed_w
     for e in range(num_episodes):
-        steps = sampling(w)
-        vt = 0
-        for s,a,r in steps:
-            vt += r 
-            w = w + alpha*guassian_policy(s,a,w)*vt
+        steps = sampling(fixed_w)
+        for s,a,vt in steps:
+            w = w + alpha*likelihood_function(s,a,w)*vt
     return w    
 
 
 if not len(sys.argv) > 1:
     assert False, 'missing argument'
         
-num_base_func = 7*7*12*1+1
-num_iterations = 100
+num_base_func = 5*5*12*1+1
+num_iterations = 500
 env = gym.make('Pendulum-v0')
-rbf = RBF(env, 2, num_base_func)
+rbf = RBF(env, 0.5, num_base_func)
 np.seterr(over='ignore')
 
 if str(sys.argv[1]) == 'train':
+    best_r = -10000
     w = np.matrix(np.random.rand(num_base_func,1))
     for l in range(num_iterations):
         print str(l+1) + '/'+ str(num_iterations)
         w = REINFORCE(w)
-        record(l,w)
+        r = record(l,w)
+        if r >= best_r:
+            best_r = r
+            np.save('iteration'+str(l)+'.npy',w)
     print 'finish training'
     np.save('saved_weight.npy',w)
 
