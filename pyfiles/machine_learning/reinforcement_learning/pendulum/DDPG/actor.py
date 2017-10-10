@@ -37,11 +37,10 @@ class ActorNetwork(object):
     def create_network(self, num_state, num_action):
         #action_input = Input(shape=(1,)+num_state)
         state_input = Input(shape=[num_state])
-        x = Dense(400, activation='relu')(state_input)
-        x = Dense(300, activation='relu')(x)
-        #x = Dense(16, activation='relu')(x)
-        #x = Dense(num_action, activation='linear')(x)
-        x = Dense(num_action,activation='tanh')(x)
+        x = Dense(16, activation='relu')(state_input)
+        x = Dense(16, activation='relu')(x)
+        x = Dense(num_action, activation='linear')(x)
+        #x = Dense(num_action,activation='tanh')(x)
         model = Model(inputs=state_input, outputs=x)
         model.summary()
         return model, model.trainable_weights, state_input

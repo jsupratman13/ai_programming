@@ -42,18 +42,22 @@ with open('critic_model.json', 'w') as json_file:
 print 'start training'
 best_r = -10000
 
+actor.update_target_network()
+critic.update_target_network()
+
 try:
     for i in range(num_episode):
         total_reward = 0
         s = env.reset()
         s_t = np.hstack((s[0], s[1], s[2]))
-        for j in range(50000):
-            epsilon *= 0.995
-            loss = 0 
+        while True:
+            #epsilon *= 0.995
+            loss = 0.0
+            #epsilon -= 1.0/10000.0
             a = actor.model.predict(s_t.reshape(1,s_t.shape[0]))
-            #noise = max(epsilon,0) * OU.function(a[0], 0.0, 0.15, 0.3) 
-            #a = a[0] + noise
             noise = Ornstein_Uhlenbeck(a[0])
+            #noise = max(epsilon,0) * noise.function(a[0], 0.0, 0.15, 0.3) 
+#            a = a[0] + noise
             a = a[0] + noise()[0]
             
             s2, r, done, info = env.step(np.array(a))
@@ -62,7 +66,7 @@ try:
             buff.add(s_t, a, r, s2_t, done)
             batch = buff.get_batch(batch_size)
 
-            if len(batch) > batch_size:
+            if len(batch) >= batch_size:
                 states = np.asarray([e[0] for e in batch])
                 actions = np.asarray([e[1] for e in batch])
                 reward = np.asarray([e[2] for e in batch])
@@ -91,13 +95,13 @@ try:
             s_t = s2_t
 
             if done:
+                print 'episode: ' + str(i) + ' reward: ' + str(total_reward) + ' loss: ' + str(loss)
                 if total_reward >= best_r:
                     best_r = total_reward
                     actor.model.save_weights('episode'+str(i)+'.hdf5', overwrite=True)
                     #actor.model.save_weights('actor_weight.hdf5', overwrite=True)
                     #critic.model.save_weights('critic_weight.hdf5', overwrite=True)
                 break
-        print 'episode: ' + str(i) + ' reward: ' + str(total_reward) + ' loss: ' + str(loss)
 
 except (KeyboardInterrupt, SystemExit):
     pass
