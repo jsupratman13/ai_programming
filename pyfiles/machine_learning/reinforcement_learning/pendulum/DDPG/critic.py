@@ -1,7 +1,8 @@
 import numpy as np
 import math
 from keras.models import Sequential, Model, model_from_json
-from keras.layers import Dense, Flatten, Input, merge, Lambda, Activation
+from keras.layers import Dense, Flatten, Input, Lambda, Activation
+from keras.layers.merge import concatenate
 from keras.optimizers import Adam
 import tensorflow as tf
 import keras.backend as K
@@ -27,7 +28,7 @@ class CriticNetwork(object):
     def update_target_network(self):
         critic_weights = self.model.get_weights()
         critic_target_weights = self.target_model.get_weights()
-        for i in xrange(len(actor_weights)):
+        for i in xrange(len(critic_weights)):
             critic_target_weights[i] = self.tau*critic_weights[i] + (1-self.tau)*critic_target_weights[i]
         self.target_model.set_weights(critic_target_weights)
 
@@ -38,11 +39,14 @@ class CriticNetwork(object):
         #x = concatenate([action_input, flattened_state])
         action_input = Input(shape=[num_action])
         state_input = Input(shape=[num_state])
-        s = Dense(400, activation='relu')(state_input)
-        a = Dense(300, activation='relu')(action_input)
-        s2 = Dense(300, activation='relu')(s)
-        x = merge([s2,a],mode='sum')
-        x = Dense(num_action, activation='relu')(x)
+        #s = Dense(400, activation='relu')(state_input)
+        #a = Dense(300, activation='relu')(action_input)
+        #s2 = Dense(300, activation='relu')(s)
+        #x = merge([s2,a],mode='sum')
+        x = concatenate([state_input, action_input])
+        x = Dense(32, activation='relu')(x)
+        x = Dense(32, activation='relu')(x)
+        x = Dense(1, activation='linear')(x)
         model = Model(inputs=[state_input, action_input], outputs=x)
         model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
         return model, action_input, state_input
