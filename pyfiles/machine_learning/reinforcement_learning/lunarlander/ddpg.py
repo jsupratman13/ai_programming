@@ -60,25 +60,21 @@ try:
             else:
                 a = actor.model.predict(s_t.reshape(1,s_t.shape[0]))
                 a = min(num_action-1, max(num_action, int(round(a[0]))))
-                pass 
 
             s2, r, done, info = env.step(a)
             s2_t = np.hstack((s2[0],s2[1],s2[2], s2[3], s2[4], s2[5], s2[6], s[7]))
-            buff.add(s_t, a, r, s2_t, done)
+            buff.add(s_t, [a], r, s2_t, done)
             batch = buff.get_batch(batch_size)
 
             if len(batch) >= batch_size:
                 states = np.asarray([e[0] for e in batch])
-                actions = np.asarray([[e[1]] for e in batch])
-                #actions = np.asarray([e[1] for e in batch])
+                actions = np.asarray([e[1] for e in batch])
                 reward = np.asarray([e[2] for e in batch])
                 new_states = np.asarray([e[3] for e in batch])
                 dones = np.asarray([e[4] for e in batch])
-                y_t = np.asarray([e[1] for e in batch])
-                new_actions = np.asarray([[np.argmax(e)] for e in actor.target_model.predict(new_states)])
+                y_t = np.zeros(len(batch))
                 
-                target_q = critic.target_model.predict([new_states, new_actions])
-                #target_q = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])
+                target_q = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])
                 
                 for k in range(len(batch)):
                     if dones[k]:
@@ -88,7 +84,6 @@ try:
                
                 loss += critic.model.train_on_batch([states,actions], y_t)
                 
-                #a_for_grad = np.asarray([[max(e)] for e in actor.model.predict(states)])
                 a_for_grad = actor.model.predict(states)
                 grads = critic.gradients(states,a_for_grad)
                 actor.update_network(states,grads)
