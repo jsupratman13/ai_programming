@@ -17,7 +17,7 @@ gamma = 0.99
 tau = 0.001
 actor_alpha = 0.0001
 critic_alpha = 0.001
-num_episode = 2000
+num_episode = 5000
 epsilon = 1
 min_epsilon = 0.01
 
@@ -111,4 +111,5 @@ try:
 except (KeyboardInterrupt, SystemExit):
     pass
 
+actor.model.save_weights('episodefinal.hdf5', overwrite=True)
 print 'finished, best reward is: ' + str(best_r)

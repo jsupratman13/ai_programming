@@ -38,8 +38,9 @@ class ActorNetwork(object):
     def create_network(self, num_state, num_action):
         #action_input = Input(shape=(1,)+num_state)
         state_input = Input(shape=[num_state])
-        x = Dense(16, activation='relu')(state_input)
-        x = Dense(16, activation='relu')(x)
+        x = Dense(400, activation='relu')(state_input)
+        x = Dense(300, activation='relu')(x)
+        x = Dense(300, activation='relu')(x)
         x = Dense(num_action, activation='linear')(x)
         #x = Dense(num_action,activation='tanh')(x)
 
