@@ -59,7 +59,7 @@ try:
                 a = env.action_space.sample()
             else:
                 a = actor.model.predict(s_t.reshape(1,s_t.shape[0]))
-                a = min(num_action-1, max(num_action, int(round(a[0]))))
+                a = max(num_action-1, min(num_action, int(round(a[0]))))
 
             s2, r, done, info = env.step(a)
             s2_t = np.hstack((s2[0],s2[1],s2[2], s2[3], s2[4], s2[5], s2[6], s[7]))
