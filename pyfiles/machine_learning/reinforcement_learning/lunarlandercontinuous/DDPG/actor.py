@@ -40,8 +40,8 @@ class ActorNetwork(object):
         x = Dense(400, activation='relu')(state_input)
         x = Dense(400, activation='relu')(x)
         x = Dense(400, activation='relu')(x)
-        x = Dense(num_action, activation='linear')(x)
-        #x = Dense(num_action,activation='tanh')(x)
+        #x = Dense(num_action, activation='linear')(x)
+        x = Dense(num_action,activation='tanh')(x)
         model = Model(inputs=state_input, outputs=x)
         return model, model.trainable_weights, state_input
 

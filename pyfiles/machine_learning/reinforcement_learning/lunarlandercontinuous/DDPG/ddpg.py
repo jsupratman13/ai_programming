@@ -32,7 +32,7 @@ K.set_session(sess)
 
 actor = ActorNetwork(sess, num_state, num_action, batch_size, tau, actor_alpha)
 critic = CriticNetwork(sess, num_state, num_action, batch_size, tau, critic_alpha)
-buff = ReplayBuffer(buffer_size)
+buff = ReplayBuffer(buffer_size) 
 noise = Ornstein_Uhlenbeck(np.zeros(num_action))
 
 with open('actor_model.json', 'w') as json_file:
@@ -56,8 +56,8 @@ try:
             loss = 0.0
             #epsilon -= 1.0/10000.0
             a = actor.model.predict(s_t.reshape(1,s_t.shape[0])) + noise()
-            a[0][0] = max(env.action_space.high[0], min(env.action_space.low[0], a[0][0]))
-            a[0][1] = max(env.action_space.high[1], min(env.action_space.low[1], a[0][1]))
+            a[0][0] = max(env.action_space.low[0], min(env.action_space.high[0], a[0][0]))
+            a[0][1] = max(env.action_space.low[1], min(env.action_space.high[1], a[0][1]))
             
             s2, r, done, info = env.step(np.array(a[0]))
             s2_t = np.hstack((s2[0],s2[1],s2[2],s2[3],s2[4],s2[5],s2[6],s2[7]))
@@ -106,4 +106,5 @@ try:
 except (KeyboardInterrupt, SystemExit):
     pass
 
+actor.model.save_weights('episodefinal.hdf5', overwrite=True)
 print 'finished, best reward is: ' + str(best_r)
