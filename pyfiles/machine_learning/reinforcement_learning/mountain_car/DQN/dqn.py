@@ -24,7 +24,7 @@ class Agent(object):
         self.epsilon_decay = 0.995
         self.batch_size = 32
         self.updateQ = 100
-        self.weights_name = 'check.hdf5'
+        self.weights_name = 'episodefinal.hdf5'
         self.env = env
         self.nstates = env.observation_space.shape[0]
         self.nactions = env.action_space.n
@@ -82,7 +82,7 @@ class Agent(object):
             if treward > max_r:
             #if not episode%200:
                 max_r = treward
-                self.model.save_weights('check'+str(episode)+'.hdf5')
+                self.model.save_weights('episode'+str(episode)+'.hdf5')
 
             #replay experience
             if len(self.memory) > self.batch_size:

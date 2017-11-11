@@ -1,8 +1,8 @@
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^#
-#filename: dnddqn.py                             
-#brief: dueling + prioritized + DDQN               
+#filename: pdnddqn.py                             
+#brief: prioritized + dueling + DDQN               
 #author: Joshua Supratman                    
-#last modified: 2017.06.21. 
+#last modified: 2017.11.10. 
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#
 import numpy as np
 import gym
@@ -25,7 +25,7 @@ class Agent(object):
         self.epsilon_decay = 0.995
         self.updateQ = 100
         self.batch_size = 32
-        self.weights_name = 'checkfinal.hdf5'
+        self.weights_name = 'episodefinal.hdf5'
         self.env = env
         self.nstates = env.observation_space.shape[0]
         self.nactions = env.action_space.n
@@ -104,7 +104,7 @@ class Agent(object):
             if not episode%1000: max_r = max_r - 100
             if treward > max_r:
                 max_r = treward 
-                self.model.save_weights('check'+str(episode)+'.hdf5')
+                self.model.save_weights('episode'+str(episode)+'.hdf5')
 
             #replay experience
             if len(self.memory) > self.batch_size:
@@ -127,7 +127,7 @@ class Agent(object):
     def replay(self):
         minibatch = self.resampling(self.memory)
         loss = 0.0
-        for s,a,r,s2,done in minibatch:
+        for s,a,r,s2,error,done in minibatch:
             Q = r if done else r + self.gamma * self.target_model.predict(s2)[0][np.argmax(self.model.predict(s2)[0])]
             target = self.target_model.predict(s)
             target[0][a] = Q
@@ -140,7 +140,7 @@ class Agent(object):
         minibatch = []
         index = int(random.random()*self.batch_size)
         beta = 0.0
-        max_w = max([m[4] for i in memory])
+        max_w = max([m[4] for m in memory])
         for j in range(self.batch_size):
             beta += random.random() * 2.0 * max_w
             while beta > memory[index][4]:
