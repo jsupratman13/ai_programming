@@ -1,5 +1,5 @@
 # AI for robot collection
-Collection of AI for self study
+Collection of AI for self study (mostly in python2.7)
 
 ## Current Types of AI
 ### Game AI Architecture
@@ -27,9 +27,11 @@ Collection of AI for self study
 
 ### Reinforcement Learning
 * Q-Learning
+* SARSA
 * Deep Q Network
 * Double Deep Q Network
 * Prioritized Replay + Dueling Network
+* Deep Deterministic Policy Gradient
 
 ## Planned
 * Rule Based
