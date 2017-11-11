@@ -28,7 +28,7 @@ Num | Observation | Min | Max
 ### Actions
 Type: Continuous
 
-Num | Observation | Min | Max
+Num | Action      | Min | Max
 ----|-------------|-----|----
 0   | left engine | 1.0 | -1.0
 1   | right engine| 1.0 | -1.0

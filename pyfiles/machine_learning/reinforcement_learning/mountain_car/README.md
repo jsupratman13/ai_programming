@@ -22,7 +22,7 @@ Num | Observation  | Min  | Max
 ## Actions
 Type: Discrete
 
-Num | Observation 
+Num | Action 
 ----|-------------
 0   | push left 
 1   | no push

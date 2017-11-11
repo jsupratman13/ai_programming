@@ -17,6 +17,6 @@ Num | Observation  | Min | Max
 ### Actions
 Type: Continuous
 
-Num | Observation  | Min | Max
+Num | Action  | Min | Max
 ----|--------------|-----|----
 0   | Joint effort | -2.0| 2.0

@@ -35,7 +35,7 @@ _|H|F|F|G
 ### Actions
 Type: Discrete
 
-Num | Observation
+Num | Action
 ----|------------
 0   | move left
 1   | move down
