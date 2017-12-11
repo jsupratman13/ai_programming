@@ -135,6 +135,8 @@ class Agent(object):
             while True:
                 self.env.render()
                 a = model.predict(s.reshape(1,s.shape[0]))
+                a[0][0] = max(self.env.action_space.low[0], min(self.env.action_space.high[0], a[0][0]))
+                a[0][1] = max(self.env.action_space.low[1], min(self.env.action_space.high[1], a[0][1]))
                 s2, r, done, info = self.env.step(np.array(a[0]))
                 #s = np.reshape(s2, [1,self.nstates])
                 s = np.hstack((s2[0], s2[1], s2[2], s2[3], s2[4], s2[5], s2[6], s2[7]))
