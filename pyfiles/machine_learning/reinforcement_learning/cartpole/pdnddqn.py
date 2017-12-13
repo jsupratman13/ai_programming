@@ -76,7 +76,7 @@ class Agent(object):
         if np.random.rand() < self.epsilon:
             return self.env.action_space.sample()
         else:
-            Q = self.model.predict(state)
+            Q = self.target_model.predict(state)
             return np.argmax(Q[0])
 
     def train(self):

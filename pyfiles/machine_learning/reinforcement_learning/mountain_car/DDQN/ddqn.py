@@ -56,7 +56,7 @@ class Agent(object):
         if np.random.rand() < self.epsilon:
             return self.env.action_space.sample()
         else:
-            Q = self.model.predict(state)
+            Q = self.target_model.predict(state)
             return np.argmax(Q[0])
 
     def train(self):
@@ -126,7 +126,7 @@ class Agent(object):
             s = np.reshape(s,[1,self.nstates])
             treward = 0
             while True:
-                self.env.render()
+                #self.env.render()
                 a = self.epsilon_greedy(s)
                 s2, r, done, info = self.env.step(a)
                 s = np.reshape(s2, [1,self.nstates])
