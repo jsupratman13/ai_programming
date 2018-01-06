@@ -12,6 +12,7 @@ Collection of AI for self study (mostly in python2.7)
 ### Localization
 * Histogram Filter
 * Particle Filter
+* Simultaneous Localization And Mapping (FastSLAM)
 
 ### Search
 * Breadth First Search
